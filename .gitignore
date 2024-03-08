@@ -41,7 +41,7 @@ package.json
 .husky
 
 # various virtualenv
-venv
+/venv/
 
 #CRD
 odoo/addons/siat/siat_data/*
