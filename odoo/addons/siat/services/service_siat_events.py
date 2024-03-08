@@ -70,7 +70,7 @@ class ServiceSiatEvents(ServiceSiatSync):
 				raise Exception('Debe seleccionar una fecha fin para el evento de contingencia')
 			
 			cufd_evento = data.get('cufd_evento')
-			fecha_fin = siat_functions.sb_siat_parse_datetime(data.get('fecha_fin'))
+			fecha_fin = siat_functions.sb_siat_parse_datetime(data['fecha_fin'].replace('Z', ''))
 		
 		if not cufd_evento:
 			raise Exception('CUFD para el evento invalido')
