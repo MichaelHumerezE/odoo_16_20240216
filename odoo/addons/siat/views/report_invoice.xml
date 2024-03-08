@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="siat_invoice_header_company">
+		<div t-out="siat_config['razonSocial']"></div>
+		<div t-out="sucursal"></div>
+		<div>Nro. Punto de Venta <span t-field="siat_invoice.punto_venta"></span></div>
+		<div t-out="cufd.direccion"></div>
+		<div>Telf: <span t-out="telefono"></span></div>
+		<div t-out="ciudad"></div>
+	</template>
+	
+	<template id="siat_invoice_header_data">
+		<div><b>NIT:</b> <span t-field="siat_invoice.nit_emisor"></span></div>
+		<div><b>FACTURA NRO:</b> <span t-field="siat_invoice.invoice_number"></span></div>
+		<div>
+			<b>CODIGO AUTORIZACION:</b><br/>
+			<span t-out="siat_invoice.get_cuf_chunked()"></span>
+		</div>
+	</template>
+	
+	<template id="siat_invoice_header">
+		<div id="invoice_header">
+			<table style="width:100%;">
+			<tr>
+				<td style="width:50%;text-align:center;">
+					<t t-call="siat.siat_invoice_header_company" />
+				</td>
+				<td style="width:50%;">
+					<t t-call="siat.siat_invoice_header_data" />
+				</td>
+			</tr>
+			</table>
+		</div>
+	</template>
+	
+	<template id="siat_invoice_info">
+		<div style="text-align:center;">
+			<div style="font-size:22px;font-weight:bold;">FACTURA</div>
+			<div>(Con Derecho a Credito Fiscal)</div>
+		</div>
+		<br/><br />
+		<div>
+			<table style="width:100%;">
+			<tr>
+				<td>
+					<div><b>Fecha:</b></div>
+				</td>
+				<td>
+					<div t-field="siat_invoice.invoice_datetime"></div>
+				</td>
+				<td>
+					<div><b>NIT/CI/CEX:</b></div>
+				</td>
+				<td>
+					<div t-field="siat_invoice.nit_ruc_nif"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div><b>Nombre/Razon Social:</b></div>
+				</td>
+				<td>
+					<div t-field="siat_invoice.customer_name"></div>
+				</td>
+				<td>
+					<div><b>Cod. Cliente:</b></div>
+				</td>
+				<td>
+					<div t-field="siat_invoice.customer_id"></div>
+				</td>
+			</tr>
+			</table>
+		</div>
+	</template>
+	
+	<template id="siat_invoice_items_totals">
+		<div id="siat_items_totals">
+			<table id="invoice-table" style="width:100%;border-collapse:collapse;">
+			<thead>
+			<tr>
+				<th style="border:1px solid #000;">CODIGO PRODUCTO/SERVICIO</th>
+				<th style="border:1px solid #000;">CANTIDAD</th>
+				<th style="border:1px solid #000;">UNIDAD MEDIDA</th>
+				<th style="border:1px solid #000;">DESCRIPCION</th>
+				<th style="border:1px solid #000;">PRECIO UNITARIO</th>
+				<th style="border:1px solid #000;">DESCUENTO</th>
+				<th style="border:1px solid #000;">SUBTOTAL</th>
+			</tr>
+			</thead>
+			<tbody>
+			<t t-foreach="siat_invoice.items" t-as="item">
+				<tr>
+					<td style="border:1px solid #000;text-align:center;"><div t-field="item.product_code"></div></td>
+					<td style="border:1px solid #000;text-align:center;"><div t-field="item.quantity"></div></td>
+					<td style="border:1px solid #000;text-align:center;">
+						<div t-esc="get_unidad_medida(item.unidad_medida)['descripcion']"></div>
+					</td>
+					<td style="border:1px solid #000;"><div t-out="item.product_name"></div></td>
+					<td style="border:1px solid #000;text-align:right;"><div t-esc="'{0:,.2f}'.format(item.price)"></div></td>
+					<td style="border:1px solid #000;text-align:right;"><div t-esc="'{0:,.2f}'.format(item.discount)"></div></td>
+					<td style="border:1px solid #000;text-align:right;"><div t-esc="'{0:,.2f}'.format(item.total)"></div></td>
+				</tr>
+			</t>
+			</tbody>
+			<tfoot>
+			<t t-set="payamount" t-value="siat_invoice.total - siat_invoice.monto_giftcard"/>
+			<tr>
+				<td colspan="4"></td>
+				<td colspan="2" style="border:1px solid #000;text-align:right;">SUBTOTAL</td>
+				<td style="border:1px solid #000;">
+					<div style="text-align:right;" t-esc="'{0:,.2f}'.format(siat_invoice.subtotal)"></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4"></td>
+				<td colspan="2" style="border:1px solid #000;text-align:right;">DESCUENTO</td>
+				<td style="border:1px solid #000;">
+					<div style="text-align:right;" t-esc="'{0:,.2f}'.format(siat_invoice.discount)"></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4">
+					<b style="text-transform:uppercase;">Son: <span t-esc="amount_text"></span></b>
+				</td>
+				<td colspan="2" style="border:1px solid #000;text-align:right;">TOTAL</td>
+				<td style="border:1px solid #000;">
+					<div style="text-align:right;" t-esc="'{0:,.2f}'.format(siat_invoice.total)"></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4">
+				</td>
+				<td colspan="2" style="border:1px solid #000;text-align:right;">MONTO GIFT CARD</td>
+				<td style="border:1px solid #000;">
+					<div style="text-align:right;" t-esc="'{0:,.2f}'.format(siat_invoice.monto_giftcard)"></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4"></td>
+				<td colspan="2" style="border:1px solid #000;text-align:right;">MONTO A PAGAR</td>
+				<td style="border:1px solid #000;">
+					<div style="text-align:right;" t-esc="'{0:,.2f}'.format(payamount)"></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4"></td>
+				<td colspan="2" style="border:1px solid #000;text-align:right;"><b>IMPORTE BASE CREDITO FISCAL</b></td>
+				<td style="border:1px solid #000;">
+					<div style="text-align:right;" t-esc="'{0:,.2f}'.format(payamount)"></div>
+				</td>
+			</tr>
+			</tfoot>
+			</table>
+		</div>
+	</template>
+	<template id="siat_invoice_legend">
+		<div style="margin-bottom:6px;">
+			ESTA FACTURA CONTRIBUYE AL DESARROLLO DEL PAÍS, EL USO ILÍCITO SERÁ SANCIONADO PENALMENTE DE ACUERDO A LEY
+		</div>
+		<div style="margin-bottom:6px;">
+			<span t-esc="siat_invoice.leyenda"></span>
+		</div>
+		<div style="margin-bottom:6px;">
+			<t t-if="siat_invoice.evento_id &lt;= 0">
+				&quot;Este documento es la Representaci&#243;n Gr&#225;fica de un Documento Fiscal Digital emitido en una modalidad de facturación en línea&quot;
+			</t>
+			<t t-if="siat_invoice.evento_id &gt; 0">
+				&quot;Este documento es la Representación Gr&#225;fica de un Documento Fiscal Digital emitido en una modalidad de facturación fuera de línea&quot;
+			</t>
+		</div>
+	</template>
+	<template id="siat_invoice_qr">
+		<div style="text-align:center;">
+			<img t-att-src="qr_buffer" style="height:100px;" />
+		</div>
+	</template>
+	<template id="siat_invoice_legend_qr">
+		<div id="invoice_legend_qr">
+			<table style="width:100%;">
+			<tr>
+				<td style="width:70%;text-align:center;vertical-align:top;margin:10px 0 0 0;">
+					<t t-call="siat.siat_invoice_legend"/>
+				</td>
+				<td>
+					<div style="margin:10px 0 0 0;text-align:center;">
+						<t t-call="siat.siat_invoice_qr"/>
+					</div>
+				</td>
+			</tr>
+			</table>
+		</div>
+	</template>
+	<template id="siat_invoice_template">
+		<t t-call="web.html_container" t-lang="'es_BO'">
+			<t t-call="web.basic_layout">
+				<style>
+				*{font-family:Arial, Verdana, Helvetica;font-size:10px;}
+				#invoice-table th, #invoice-table td, table td, table th{padding:2px;}
+				</style>
+				<t t-foreach="docs" t-as="o">
+					<t t-set="o" t-value="o.with_context({'lang': 'es_BO'})"/>
+					<t t-set="siat_invoice" t-value="o" />
+					<t t-call="siat.siat_invoice_header" />
+					<br/><br />
+					<t t-call="siat.siat_invoice_info" />
+					<t t-call="siat.siat_invoice_items_totals" />
+					<t t-call="siat.siat_invoice_legend_qr" />
+				</t>
+			</t>
+		</t>
+	</template>
+	<template id="siat_invoice_template_ticket">
+		<t t-call="web.html_container" t-lang="'es_BO'">
+			<t t-call="web.basic_layout">
+				<style>
+				*{font-family:Arial, Verdana, Helvetica;font-size:11px;}
+				hr{color:#000;border:1px solid #000;background:#000;width:100%;}
+				table td{padding:2px;}
+				</style>
+				<t t-foreach="docs" t-as="o">
+					<t t-set="o" t-value="o.with_context({'lang': 'es_BO'})"/>
+					<t t-set="siat_invoice" t-value="o" />
+					<div style="text-align:center;margin-bottom:6px;">
+						<div style="text-align:center;font-weight:bold;">
+							<div>FACTURA</div>
+							<div>(Con Derecho a Credito Fiscal)</div>
+						</div>
+						<t t-call="siat.siat_invoice_header_company" />
+						<ht/>
+						<t t-call="siat.siat_invoice_header_data" />
+					</div>
+					<hr/>
+					<div>
+						<div>
+							<b>Fecha:</b>
+							<span t-field="siat_invoice.invoice_datetime"></span>
+						</div>
+						<div>
+							<b>NIT/CI/CEX:</b>
+							<span t-field="siat_invoice.nit_ruc_nif"></span>
+						</div>
+						<div>
+							<b>Nombre/Razon Social:</b>
+							<span t-field="siat_invoice.customer_name"></span>
+						</div>
+						<div>
+							<b>Cod. Cliente:</b>
+							<span t-field="siat_invoice.customer_id"></span>
+						</div>
+					</div>
+					<!--
+					<t t-call="siat.siat_invoice_info" />
+					<t t-call="siat.siat_invoice_items_totals" />
+					-->
+					<hr/>
+					<table style="width:100%;border-collapse:collapse;">
+					<tbody>
+					<t t-foreach="siat_invoice.items" t-as="item">
+						<tr>
+							<td style="">
+								<div>
+									<span t-field="item.product_code"></span>
+									<span t-field="item.product_name"></span>
+								</div>
+								<div>
+									Unidad Medida: <span t-esc="get_unidad_medida(item.unidad_medida)['descripcion']"></span>
+								</div>
+								<div>
+									<span t-field="item.quantity"></span> 
+									X 
+									<span t-esc="'{0:,.2f}'.format(item.price)"></span>
+									-
+									<span t-esc="'{0:,.2f}'.format(item.discount)"></span>
+								</div>
+							</td>
+							<td style="vertical-align:bottom;">
+								<div style="text-align:right;" t-esc="'{0:,.2f}'.format(item.total)"></div>
+							</td>
+						</tr>
+					</t>
+					<tr><td colspan="2"><hr/></td></tr>
+					</tbody>
+					<tfoot>
+					<t t-set="payamount" t-value="siat_invoice.total - siat_invoice.monto_giftcard" />
+					<tr>
+						<td style="text-align:right;">SUBTOTAL</td>
+						<td style="">
+							<div style="text-align:right;" t-esc="'{0:,.2f}'.format(siat_invoice.subtotal)"></div>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align:right;">DESCUENTO</td>
+						<td style="">
+							<div style="text-align:right;" t-esc="'{0:,.2f}'.format(siat_invoice.discount)"></div>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align:right;">TOTAL</td>
+						<td style="">
+							<div style="text-align:right;" t-esc="'{0:,.2f}'.format(siat_invoice.total)"></div>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align:right;">MONTO GIFT CARD</td>
+						<td style="">
+							<div style="text-align:right;" t-esc="'{0:,.2f}'.format(siat_invoice.monto_giftcard)"></div>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align:right;">MONTO A PAGAR</td>
+						<td style="">
+							<div style="text-align:right;" t-esc="'{0:,.2f}'.format(payamount)"></div>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align:right;">IMPORTE BASE CREDITO FISCAL</td>
+						<td style="">
+							<div style="text-align:right;" t-esc="'{0:,.2f}'.format(payamount)"></div>
+						</td>
+					</tr>
+					</tfoot>
+					</table>
+					<hr/>
+					<div>
+						Son: <span t-esc="amount_text"></span>
+					</div>
+					<hr/>
+					<div style="text-align:center;">
+						<t t-call="siat.siat_invoice_legend" />
+						<br/>
+						<t t-call="siat.siat_invoice_qr" />
+					</div>
+				</t>
+			</t>
+		</t>
+	</template>
+	<record id="siat_invoice_legal" model="report.paperformat">
+		<field name="name">Formato Estandar</field>
+		<field name="default" eval="True"/>
+		<field name="format">Legal</field>
+		<field name="orientation">Portrait</field>
+		<field name="margin_top">2</field>
+		<field name="margin_bottom">1</field>
+		<field name="margin_left">1</field>
+		<field name="margin_right">1</field>
+		<field name="header_line" eval="False"/>
+		<field name="header_spacing">0</field>
+		<field name="dpi">90</field>
+	</record>
+	<record id="siat_invoice_ticket" model="report.paperformat">
+		<field name="name">Formato Ticket</field>
+		<field name="default" eval="True"/>
+		<field name="format">custom</field>
+		<field name="orientation">Portrait</field>
+		<!-- <field name="page_height">320</field> -->
+		<field name="page_width">85</field>
+		<field name="margin_top">2</field>
+		<field name="margin_bottom">1</field>
+		<field name="margin_left">1</field>
+		<field name="margin_right">1</field>
+		<field name="header_line" eval="False"/>
+		<field name="header_spacing">0</field>
+		<field name="dpi">90</field>
+	</record>
+	<record id="siat_invoice_report" model="ir.actions.report">
+		<field name="name">Siat Invoice</field>
+		<field name="model">siat.invoice</field>
+		<field name="report_type">qweb-pdf</field>
+		<field name="report_name">siat.siat_invoice_template</field>
+		<field name="report_file">siat.siat_invoice_template</field>
+		<field name="print_report_name">'Invoice - %s' % (object.name)</field>
+		<field name="paperformat_id" ref="siat_invoice_legal"/>
+	</record>
+	<record id="siat_invoice_report_ticket" model="ir.actions.report">
+		<field name="name">Siat Invoice Ticket</field>
+		<field name="model">siat.invoice</field>
+		<field name="report_type">qweb-pdf</field>
+		<field name="report_name">siat.siat_invoice_template_ticket</field>
+		<field name="report_file">siat.siat_invoice_template_ticket</field>
+		<field name="print_report_name">'Invoice - %s' % (object.name)</field>
+		<field name="paperformat_id" ref="siat_invoice_ticket"/>
+	</record>
+</odoo>

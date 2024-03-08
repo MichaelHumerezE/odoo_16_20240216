@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+	<template id="report_invoice_with_payments" inherit_id="account.report_invoice_document">
+        <xpath expr="." position="inside">
+            <style>
+
+            </style>
+        </xpath>
+        <!--
+        <xpath expr="//div[@id='informations']" position="replace">
+            <t t-set="siat_invoice" t-value="o.siat_invoice_id" />
+            <t t-call="siat.siat_invoice_info" />
+        </xpath>
+        -->
+        <!--
+        <xpath expr="//table/thead/tr/th[@name='th_description']" position="before">
+            <th>Codigo Producto/Servicio</th>
+            <th>Unidad Medida</th>
+        </xpath>
+        -->
+        <!--
+        <xpath expr="//table[@name='invoice_line_table']" position="replace">
+            <t t-set="siat_invoice" t-value="o.siat_invoice_id" />
+            <t t-call="siat.siat_invoice_items_totals" />
+        </xpath>
+        -->
+        <!--
+        <xpath expr="//td[@name='account_invoice_line_name']" position="before">
+            <td><span t-esc="line.product_id.default_code"></span></td>
+            <td>
+                <span t-esc="get_unidad_medida(line.product_id[0].unidad_medida)['descripcion']"></span>
+            </td>
+        </xpath>
+        -->
+
+        <!--
+        <xpath expr="//div[@id='total']" position="replace">
+            <div id="siat-totals">
+
+            </div>
+        </xpath>
+        -->
+        <!--
+        <xpath expr="//div[@class='clearfix mb-4']" position="after">
+            <t t-set="siat_invoice" t-value="o.siat_invoice_id" />
+            <t t-call="siat.siat_invoice_legend_qr" />
+        </xpath>
+        -->
+        <xpath expr="//div[hasclass('row')][1]" position="replace">
+            <span></span>
+        </xpath>
+        <xpath expr="//div[hasclass('page')]" position="replace">
+            <div t-if="o.siat_invoice_id">
+                <t t-set="siat_invoice" t-value="o.siat_invoice_id" />
+                <t t-call="siat.siat_invoice_header" />
+                <br/><br />
+                <t t-call="siat.siat_invoice_info" />
+                <t t-call="siat.siat_invoice_items_totals" />
+                <t t-call="siat.siat_invoice_legend_qr" />
+            </div>
+            <div t-else="">$0</div>
+        </xpath>
+    </template>
+</odoo>

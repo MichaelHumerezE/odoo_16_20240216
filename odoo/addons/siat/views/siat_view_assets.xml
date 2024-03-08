@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!--
+	<template id="siat_view_assets" name="siat_view_assets" inherit_id="web.assets_backend">
+	-->
+	<!--
+	<template id="siat_view_assets" name="siat_view_assets" inherit_id="web.assets_common">
+		<xpath expr="." position="inside">
+			<script type="text/javascript" src="/siat/static/src/js/siat_view.js"/>
+			<link rel="stylesheet" type="text/scss" href="/siat/static/src/scss/siat_view.scss"/>
+		</xpath>
+	</template>
+	-->
+</odoo>

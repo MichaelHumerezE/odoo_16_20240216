@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="siat_events_view" model="ir.ui.view">
+		<field name="name">siat.events.view</field>
+		<field name="model">siat.event</field>
+		<field name="mode">primary</field>
+		<field name="arch" type="xml">
+			<siat_view view="events"></siat_view>
+		</field>
+	</record>
+	<record id="action_siat_events" model="ir.actions.act_window">
+		<field name="name">Siat Eventos</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">siat.event</field>
+		<field name="view_mode">siat_view</field>
+		<field name="view_id" ref="siat_events_view" />
+	</record>
+</odoo>

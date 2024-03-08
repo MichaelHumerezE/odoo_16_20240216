@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+	<record id="product_template_form_view" model="ir.ui.view">
+        <field name="name">product.template.form.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+			<!--
+            <xpath expr="//page[@name='sales']" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </xpath>
+            -->
+            <xpath expr="//page[@name='sales']" position="after">
+				<page name="siat-data" string="Homologación Siat">
+					<group name="siat-data" >
+						<field name="unidad_medida" string="Unidad Medida SIN" invisible="1" />
+						<field name="unidad_medida_selector" string="Unidad Medida SIN" />
+						<field name="actividad_economica" string="Actividad Economica SIN" />
+						<field name="codigo_producto_sin" string="Codigo Producto SIN" invisible="1" />
+						<field name="codigo_producto_sin_selector" string="Codigo Producto SIN" />
+						<script>
+						(function(){
+							let productos_sin = [];
+							const elActividad = document.querySelector('#actividad_economica');
+							const elProductosSin = document.querySelector('#codigo_producto_sin_selector');
+							for(let op of elProductosSin.querySelectorAll('option'))
+							{
+								if( op.value == '"false"' || op.value == '"0"' ) 
+									continue;
+								const parts = op.innerHTML.replaceAll(')', '').split('(');
+								if( typeof(parts[1]) == 'undefined' )
+									continue;
+									
+								productos_sin.push({
+									actividad: parts[0].trim(),
+									codigo: op.value.replaceAll('"', ''),
+									descripcion: parts[1].trim(),
+								});
+							}
+							console.log(productos_sin);
+							elActividad.addEventListener('change', function()
+							{
+								console.log(this.value);
+							});
+						})();
+						</script>
+					</group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

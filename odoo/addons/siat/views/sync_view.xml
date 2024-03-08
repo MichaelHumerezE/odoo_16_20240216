@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id='siat_sync_view' model='ir.ui.view'>
+		<field name="name">siat.sync.view</field>
+		<field name="model">siat.invoice</field>
+		<field name="mode">primary</field>
+		<field name="arch" type="xml">
+			<siat_view view="sync"></siat_view>
+			<!--
+			<kanban>
+				<templates>
+					<t t-name="kanban-box">
+						<div class="oe_kanban_global_click">
+							<field name="customer_name"/>
+						</div>
+					</t>
+				</templates>
+			</kanban>
+			-->
+		</field>
+	</record>
+	
+	<record id="siat_pos_view" model="ir.ui.view">
+		<field name="name">siat.pos.view</field>
+		<field name="model">siat.pos</field>
+		<field name="mode">primary</field>
+		<field name="arch" type="xml">
+			<siat_view view="pos"></siat_view>
+		</field>
+	</record>
+	<record id="siat_cufds_view" model="ir.ui.view">
+		<field name="name">siat.cufds.view</field>
+		<field name="model">siat.cufd</field>
+		<field name="mode">primary</field>
+		<field name="arch" type="xml">
+			<siat_view view="cufds"></siat_view>
+		</field>
+	</record>
+	
+	<record id="siat_invoices_view" model="ir.ui.view">
+		<field name="name">siat.invoices.view</field>
+		<field name="model">siat.invoice</field>
+		<field name="mode">primary</field>
+		<field name="arch" type="xml">
+			<siat_view view="invoices"></siat_view>
+		</field>
+	</record>
+	<record id="siat_invoicer_view" model="ir.ui.view">
+		<field name="name">siat.invoicer.view</field>
+		<field name="model">siat.invoice</field>
+		<field name="mode">primary</field>
+		<field name="arch" type="xml">
+			<siat_view view="invoicer"></siat_view>
+		</field>
+	</record>
+	<record id="siat_config_view" model="ir.ui.view">
+		<field name="name">siat.config.view</field>
+		<field name="model">siat.config</field>
+		<field name="mode">primary</field>
+		<field name="arch" type="xml">
+			<siat_view view="config"></siat_view>
+		</field>
+	</record>
+
+	<record id="action_siat_sync" model="ir.actions.act_window">
+		<field name="name">Siat Sync</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">siat.invoice</field>
+		<field name="view_mode">siat_view</field>
+		<!--<field name="view_mode">qweb</field>-->
+		<field name="view_id" ref="siat_sync_view" />
+		
+		<!--
+		
+		<field name="domain">[]</field>
+		-->
+		<!--
+		<field name="context">{'search_default_group_by_payment_method': 1}</field>
+		-->
+		
+		<field name="help" type="html">
+			<p class="o_view_nocontent_empty_folder">
+				No se encontraron facturas
+			</p>
+			<p>
+				--------------------------
+			</p>
+		</field>
+	</record>
+	
+	<record id="action_siat_pointofsales" model="ir.actions.act_window">
+		<field name="name">Siat Puntos de Venta</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">siat.pos</field>
+		<field name="view_mode">siat_view</field>
+		<field name="view_id" ref="siat_pos_view" />
+	</record>
+	<record id="action_siat_cufds" model="ir.actions.act_window">
+		<field name="name">Siat Cufds</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">siat.cufd</field>
+		<field name="view_mode">siat_view</field>
+		<field name="view_id" ref="siat_cufds_view" />
+	</record>
+	
+	<record id="action_siat_invoices" model="ir.actions.act_window">
+		<field name="name">Siat Facturas</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">siat.invoice</field>
+		<field name="view_mode">siat_view</field>
+		<field name="view_id" ref="siat_invoices_view" />
+	</record>
+	<record id="action_siat_invoicer" model="ir.actions.act_window">
+		<field name="name">Siat Facturador</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">siat.invoice</field>
+		<field name="view_mode">siat_view</field>
+		<field name="view_id" ref="siat_invoicer_view" />
+	</record>
+	<record id="action_siat_config" model="ir.actions.act_window">
+		<field name="name">Siat Config</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">siat.config</field>
+		<field name="view_mode">siat_view</field>
+		<field name="view_id" ref="siat_config_view" />
+	</record>
+</odoo>

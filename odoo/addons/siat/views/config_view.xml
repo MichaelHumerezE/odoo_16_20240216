@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.siat</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="30"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Configuracion SIAT" string="Configuracion SIAT"
+                     data-key="siat_config">
+                    <h2 name="pos_interface">Configuracion SIAT</h2>
+                    <div class="row mt16 o_settings_container" id="pos_interface_section">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <field name="siat_config" />
+                            <div class="form-group mb-3">
+                                <div><label for="nombre_sistema"/></div>
+                                <field name="nombre_sistema" string="Nombre Sistema" />
+                            </div>
+                            <div class="form-group mb-3">
+                                <div><label for="nit"/></div>
+                                <field name="nit" string="NIT" />
+                            </div>
+                             <div class="form-group mb-3">
+                                <div><label for="modalidad"/></div>
+                                <field name="modalidad" />
+                             </div>
+                             <div class="form-group mb-3">
+                                <div><label for="token_delegado"/></div>
+                                <field name="token_delegado" />
+                             </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                             <div class="form-group mb-3">
+                                <div><label for="codigo_sistema"/></div>
+                                <field name="codigo_sistema" />
+                             </div>
+                             <div class="form-group mb-3">
+                                <div><label for="razon_social"/></div>
+                                <field name="razon_social" />
+                             </div>
+                             <div class="form-group mb-3">
+                                <div><label for="ambiente"/></div>
+                                 <field name="ambiente" />
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    <!--
+    <record id="action_siat_configuration" model="ir.actions.act_window">
+        <field name="name">Siat Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'siat_config'}</field>
+    </record>
+
+    <menuitem id="menu_siat_general_settings" name="Configuracion" parent="menu_siat_root"
+        sequence="10" action="action_siat_configuration"  />
+    -->
+</odoo>

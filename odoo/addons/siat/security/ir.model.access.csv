@@ -1,0 +1,9 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_invoice_model,invoice_model,model_siat_invoice,base.group_user,1,1,1,1
+access_cufd_model,cufd_model,model_siat_cufd,base.group_user,1,1,1,1
+access_invoiceitem_model,invoiceitem_model,model_siat_invoiceitem,base.group_user,1,1,1,1
+access_event_model,event_model,model_siat_event,base.group_user,1,1,1,1
+access_branch_model,branch_model,model_siat_branch,base.group_user,1,1,1,1
+access_pos_model,pos_model,model_siat_pos,base.group_user,1,1,1,1
+access_package_model		,package_model,model_siat_package,base.group_user,1,1,1,1
+access_config_model,config_model,model_siat_config,base.group_user,1,1,1,1

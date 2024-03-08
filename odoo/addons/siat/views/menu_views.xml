@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<menuitem id="menu_siat_root" name="Facturacion SIAT" action="action_siat_sync" sequence="150" />
+	<menuitem id="menu_siat_sync" name="Sincronizacion" action="action_siat_sync" parent="menu_siat_root" sequence="2" />
+	<menuitem id="menu_siat_branches" name="Sucursales" action="action_siat_branches" parent="menu_siat_root" sequence="3" />
+	<menuitem id="menu_siat_pos" name="Puntos de Venta" action="action_siat_pointofsales" parent="menu_siat_root" sequence="4" />
+	<menuitem id="menu_siat_cufds" name="CUFDs" action="action_siat_cufds" parent="menu_siat_root" sequence="5" />
+	<menuitem id="menu_siat_events" name="Eventos" action="action_siat_events" parent="menu_siat_root" sequence="6" />
+	<menuitem id="menu_siat_facturas" name="Facturas" action="action_siat_invoices" parent="menu_siat_root" sequence="7" />
+	<menuitem id="menu_siat_facturador" name="Facturador" action="action_siat_invoicer" parent="menu_siat_root" sequence="8" />
+	<menuitem id="menu_siat_settings" name="Configuracion" action="action_siat_config" parent="menu_siat_root" sequence="10"  />
+</odoo>
