@@ -35,7 +35,7 @@
 	
 	<template id="siat_invoice_info">
 		<div style="text-align:center;">
-			<div style="font-size:22px;font-weight:bold;">FACTURA</div>
+			<div style="font-size:22px;font-weight:bold;">FACTURA1</div>
 			<div>(Con Derecho a Credito Fiscal)</div>
 		</div>
 		<br/><br />
@@ -222,7 +222,7 @@
 					<t t-set="siat_invoice" t-value="o" />
 					<div style="text-align:center;margin-bottom:6px;">
 						<div style="text-align:center;font-weight:bold;">
-							<div>FACTURA</div>
+							<div>FACTURA2</div>
 							<div>(Con Derecho a Credito Fiscal)</div>
 						</div>
 						<t t-call="siat.siat_invoice_header_company" />

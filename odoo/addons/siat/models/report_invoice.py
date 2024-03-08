@@ -5,6 +5,7 @@ from ..services.service_invoices import ServiceInvoices
 from ..libsiat.invoices.siatinvoice import SiatInvoice
 from ..libsiat import functions as siat_functions
 from ..models.invoice_item import InvoiceItem
+from datetime import datetime, timedelta
 
 class ReportInvoice(models.AbstractModel):
 	_name = 'report.siat.siat_invoice_template'
@@ -17,6 +18,10 @@ class ReportInvoice(models.AbstractModel):
 		invoices = self.env['siat.invoice'].browse( docids )
 		invoice = invoices[0]
 		cufds = self.env['siat.cufd'].search([('codigo', '=', invoice.cufd)], limit=1)
+
+		#MODIFY - View hour current
+		invoice.invoice_datetime = invoice.invoice_datetime + timedelta(hours=4)
+		#***********************************************
 		
 		#for invoice in invoices:
 		#	invoice.amount_text = 'literal del monto'
@@ -28,7 +33,7 @@ class ReportInvoice(models.AbstractModel):
 		qr64 = siat_functions.sb_build_qr(siat_url)
 		# print('SIAT URL: ', siat_url, 'QR64: ', qr64.decode('utf8'))
 		amount_text = siat_functions.sb_numeroToLetras(invoice.total) + ' BOLIVIANOS'
-
+		print(invoice.invoice_datetime)
 		return {
 			'docs': invoices,
 			'amount_text': amount_text, # .encode('ascii', 'xmlcharrefreplace'),

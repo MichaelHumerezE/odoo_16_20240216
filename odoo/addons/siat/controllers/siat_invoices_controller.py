@@ -50,8 +50,8 @@ class SiatSyncController(Controller, SiatController):
 		service = ServiceInvoices()
 		try:
 			#MODIFY - DISCOUNT STR TO FLOAT
-			print(data, '****************************************')
 			data['discount'] = round(float(data['discount']), 2)
+			#****************************************
 			#MODIFY - TOTAL ROUNDED 2 DECIMAL
 			data['total'] = round(data['total'], 2)
 			#****************************************

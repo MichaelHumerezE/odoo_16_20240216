@@ -1,4 +1,4 @@
-#!C:\Data\Proyectos\odoo_16.0.latest\odoo-16.0.post20240216\venv\Scripts\python.exe
+#!C:\Users\USERR\Documents\Proyectos\Odoo\odoo_16_20240216\venv\Scripts\python.exe
 # -*- coding: utf8 -*-
 # :Copyright: © 2015 Günter Milde.
 # :License: Released under the terms of the `2-Clause BSD license`_, in short:

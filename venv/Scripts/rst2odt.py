@@ -1,4 +1,4 @@
-#!C:\Data\Proyectos\odoo_16.0.latest\odoo-16.0.post20240216\venv\Scripts\python.exe
+#!C:\Users\USERR\Documents\Proyectos\Odoo\odoo_16_20240216\venv\Scripts\python.exe
 
 # $Id: rst2odt.py 5839 2009-01-07 19:09:28Z dkuhlman $
 # Author: Dave Kuhlman <dkuhlman@rexx.com>

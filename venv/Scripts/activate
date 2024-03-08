@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Data\Proyectos\odoo_16.0.latest\odoo-16.0.post20240216\venv"
+VIRTUAL_ENV="C:\Users\USERR\Documents\Proyectos\Odoo\odoo_16_20240216\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

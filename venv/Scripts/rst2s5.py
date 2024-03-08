@@ -1,4 +1,4 @@
-#!C:\Data\Proyectos\odoo_16.0.latest\odoo-16.0.post20240216\venv\Scripts\python.exe
+#!C:\Users\USERR\Documents\Proyectos\Odoo\odoo_16_20240216\venv\Scripts\python.exe
 
 # $Id: rst2s5.py 4564 2006-05-21 20:44:42Z wiemann $
 # Author: Chris Liechti <cliechti@gmx.net>

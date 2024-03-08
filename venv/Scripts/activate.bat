@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Data\Proyectos\odoo_16.0.latest\odoo-16.0.post20240216\venv
+set VIRTUAL_ENV=C:\Users\USERR\Documents\Proyectos\Odoo\odoo_16_20240216\venv
 
 if not defined PROMPT set PROMPT=$P$G
 

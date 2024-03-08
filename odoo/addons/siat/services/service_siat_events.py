@@ -104,6 +104,10 @@ class ServiceSiatEvents(ServiceSiatSync):
 		return event[0]
 		
 	def close(self, event_id):
+
+		#MODIFY - Load config
+		config 		= self.getConfig()
+		#*********************************************
 		
 		event = self.read(event_id)
 		if event is None:
@@ -187,12 +191,22 @@ class ServiceSiatEvents(ServiceSiatSync):
 				continue
 
 			data = {'reception': None, 'reception_error': None}
+			
+			#MODIFY - Load Cafc if event id in [5, 6, 7]
+			cafcLoad = None
+			if event.evento_id in [5,6,7]:
+				if config['cafc']:
+					cafcLoad = json.loads(config['cafc'])['compra_venta']['cafc']
+				else: 
+					raise Exception('El CAFC del evento no existe')
+			#******************************************************
+
 			res = service.recepcionPaqueteFactura(
 				siatInvoices,
 				event.codigo_reception,
 				siat_constants.TIPO_EMISION_OFFLINE,
 				pkg.invoice_type,
-				None
+				cafcLoad
 			)
 			print('RECEPCION PAQUETE',  res)
 

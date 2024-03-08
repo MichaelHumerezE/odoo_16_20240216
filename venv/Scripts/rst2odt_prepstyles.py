@@ -1,4 +1,4 @@
-#!C:\Data\Proyectos\odoo_16.0.latest\odoo-16.0.post20240216\venv\Scripts\python.exe
+#!C:\Users\USERR\Documents\Proyectos\Odoo\odoo_16_20240216\venv\Scripts\python.exe
 
 # $Id: rst2odt_prepstyles.py 8346 2019-08-26 12:11:32Z milde $
 # Author: Dave Kuhlman <dkuhlman@rexx.com>

@@ -33,7 +33,7 @@ class SiatAccountMove(models.Model):
             'complemento': '',
             'codigo_metodo_pago': 1,
             'numero_tarjeta': None,
-            'total': to_post.amount_total,
+            'total': round(to_post.amount_total,2),
             'codigo_moneda': 1,
             'tipo_cambio': 1,
             'monto_giftcard': 0,

@@ -1,4 +1,4 @@
-#!C:\Data\Proyectos\odoo_16.0.latest\odoo-16.0.post20240216\venv\Scripts\python.exe
+#!C:\Users\USERR\Documents\Proyectos\Odoo\odoo_16_20240216\venv\Scripts\python.exe
 
 # $Id: rst2latex.py 5905 2009-04-16 12:04:49Z milde $
 # Author: David Goodger <goodger@python.org>

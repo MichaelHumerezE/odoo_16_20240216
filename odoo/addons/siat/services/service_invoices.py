@@ -16,6 +16,8 @@ from ..libsiat import functions as siat_functions
 from ..libsiat import constants as siat_constants
 from ..libsiat.invoices.siatinvoice import SiatInvoice
 from ..libsiat.classes.siat_exception import SiatException, SiatExceptionInvalidNit
+import json
+from datetime import datetime, timedelta
 
 
 class ServiceInvoices(ServiceSiat):
@@ -238,6 +240,23 @@ class ServiceInvoices(ServiceSiat):
 		invoice_dict = None
 
 		if activeEvent is not None:
+			#MODIFY - Only for purchase sale - documentary sector
+			if activeEvent.evento_id in [5,6,7]:
+				if (config['cafc']):
+					facturaSiat.cabecera.cafc = json.loads(config['cafc'])['compra_venta']['cafc']
+					#MODIFY - Subtract 4 hours from the incoming date
+					fecha_original = datetime.strptime(invoiceData['invoice_date_time'], "%Y-%m-%dT%H:%M:%S.%fZ")
+					fecha_original = fecha_original - timedelta(hours=4)
+					fecha_original = fecha_original.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+					fecha_original = fecha_original.replace('Z', '')
+					facturaSiat.cabecera.fechaEmision = fecha_original
+					#******************************************************
+					#MODIFY - Update cufd event
+					facturaSiat.cabecera.cufd = activeEvent.cufd_evento
+					#******************************************************
+				else: 
+					raise Exception('El CAFC del evento no existe')
+			#******************************************************
 			if invoiceData['tipo_documento_identidad'] == 5:
 				facturaSiat.cabecera.codigoExcepcion = 1
 			cufd_evento = activeEvent.get_cufd_evento()
@@ -267,7 +286,7 @@ class ServiceInvoices(ServiceSiat):
 
 			serviceFacturacion = SiatFactory.obtenerServicioFacturacion(config, cuis['codigo'], cufd.codigo, cufd.codigo_control)
 			siat_response = serviceFacturacion.recepcionFactura(facturaSiat, siat_constants.TIPO_EMISION_ONLINE, siat_constants.TIPO_FACTURA_CREDITO_FISCAL)
-			print(siat_response)
+			print(siat_response, 'SIAT RESPONSE *****************************************')
 			if siat_response is None:
 				raise Exception('SIAT ERROR: Respuesta de impuestos invalida')
 			if siat_response['codigoEstado'] != 908:
@@ -283,7 +302,7 @@ class ServiceInvoices(ServiceSiat):
 		invoice_dict['tipo_factura_documento'] = siat_constants.TIPO_FACTURA_CREDITO_FISCAL
 		invoice_dict['ambiente'] = config['ambiente']
 		invoice_dict['company_id'] = request.env.company.id
-
+		
 		invoice = request.env['siat.invoice'].create(invoice_dict)
 		# for detalle in facturaSiat.detalle:
 		for request_item in invoiceData['items']:
@@ -338,7 +357,7 @@ class ServiceInvoices(ServiceSiat):
 		customer = invoice.get_customer()
 		siat_invoice = self.invoiceToSiatInvoice(invoice)
 		xml = service.buildInvoiceXml(siat_invoice)
-		# print('XML', xml.decode('utf8'))
+		#print('XML', xml.decode('utf8'))
 
 		ctx = {
 			'email_from': 'facturacion@1bytebo.net',

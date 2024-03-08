@@ -3,7 +3,7 @@ from ..libsiat.invoices.siatinvoice import SiatInvoice
 
 class ResourceInvoice(SiatResource):
 	
-	_serializable = ['id', 'invoice_id', 'invoice_number', 'total', 'tax', 'codigo_sucursal', 
+	_serializable = ['id', 'invoice_id', 'invoice_number', 'total', 'tax', 'codigo_sucursal',
 		'punto_venta', 'codigo_documento_sector', 'evento_id', 'ambiente', 'nit_ruc_nif', 'control_code', 'status', 'cufd', 'cuf',
 		'siat_id', 'leyenda', 'subtotal', 'total_tax', 'invoice_datetime', 'customer', 'print_url', 'print_url_ticket', 'siat_url'
 	]
