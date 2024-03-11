@@ -1,5 +1,6 @@
 from odoo import models, fields, api
 import json
+from datetime import datetime, timedelta
 
 from ..libsiat.invoices.siatinvoice import SiatInvoice
 
@@ -58,6 +59,7 @@ class Invoice(models.Model):
 
 	STATUS_ISSUED = 'ISSUED'
 	STATUS_VOID = 'VOID'
+	STATUS_RENOVATED = 'RENOVATED'
 
 	def nextInvoiceNumber(self, company_id):
 		count = self.env['siat.invoice'].search_count([('company_id', '=', company_id)])
@@ -131,3 +133,14 @@ class Invoice(models.Model):
 		chunks = [self.cuf[i:i+length] + separator for i in range(0, len(self.cuf), length)]
 
 		return "\n".join(chunks)
+	
+	def get_cuf_chunked(self, separator=''):
+		length = 30
+		chunks = [self.cuf[i:i+length] + separator for i in range(0, len(self.cuf), length)]
+
+		return "\n".join(chunks)
+	
+	def get_date_time(self):
+		Invoice_datetime = self.invoice_datetime
+
+		return Invoice_datetime.strftime("%Y-%m-%d %H:%M:%S")

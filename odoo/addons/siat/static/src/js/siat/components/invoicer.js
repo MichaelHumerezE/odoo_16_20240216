@@ -857,7 +857,7 @@
 						if( !this.invoice.data.nro_factura )
 							throw {error: 'Debe ingresar el numero de factura'};
 							
-						this.invoice.invoice_date_time = new Date(`${this.$refs.fecha.value} ${ this.$refs.hora.value}`);
+						this.invoice.invoice_date_time = this.getDateTime();
 						//this.evento.fecha_inicio.setSeconds((new Date()).getSeconds());
 					}
 					
@@ -910,6 +910,18 @@
 					else
 						this.$root.$toast.ShowError(e.error || e.message || 'Error desconocido');
 				}
+			},
+			getDateTime(){
+				dateTime = new Date(`${this.$refs.fecha.value} ${ this.$refs.hora.value}`);
+				const year = dateTime.getFullYear();
+				const month = ('0' + (dateTime.getMonth() + 1)).slice(-2); // Agregar 1 porque los meses son zero-based
+				const day = ('0' + dateTime.getDate()).slice(-2);
+				const hours = ('0' + dateTime.getHours()).slice(-2);
+				const minutes = ('0' + dateTime.getMinutes()).slice(-2);
+				const seconds = ('0' + dateTime.getSeconds()).slice(-2);
+				// Formatear la fecha y hora como desees
+				const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.00`;
+				return formattedDateTime;
 			},
 			reset()
 			{

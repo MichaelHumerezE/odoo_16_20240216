@@ -39,7 +39,7 @@
 								<div><b>CUF:</b> {{ invoice.cuf }}</div>
 								<div>
 									<span class="label badge" 
-										v-bind:class="{'label-success bg-success text-white': invoice.status == 'ISSUED', 'label-warning bg-warning': invoice.status == 'ERROR', 'label-danger bg-danger': invoice.status == 'VOID'}">
+										v-bind:class="{'label-success bg-success text-white': invoice.status == 'ISSUED' || invoice.status == 'RENOVATED', 'label-warning bg-warning': invoice.status == 'ERROR', 'label-danger bg-danger': invoice.status == 'VOID'}">
 										{{ getStatus(invoice.status) }}
 									</span>
 								</div>
@@ -57,6 +57,9 @@
 								</template>
 								<template v-if="invoice.status == 'ISSUED'">
 									<a href="javascript:;" class="btn btn-sm btn-danger w-100 mb-1 btn-block" v-on:click="anular(invoice, index)">Anular</a>
+								</template>
+								<template v-if="invoice.status == 'VOID'">
+									<a href="javascript:;" class="btn btn-sm btn-danger w-100 mb-1 btn-block" v-on:click="renovar(invoice, index)">Renovar</a>
 								</template>
 								<a href="javascript:;" class="btn btn-sm btn-primary w-100 mb-1 btn-block" v-on:click="reenviar(invoice, index)">Reenviar</a>
 							</div>
@@ -114,6 +117,7 @@
 					'ISSUED': 'Emitida',
 					'ERROR': 'Error',
 					'VOID': 'Anulada',
+					'RENOVATED': 'Renovado'
 				},
 				currentInvoice: null,
 				items: [],
@@ -210,7 +214,26 @@
 					console.log(e);
 					this.$root.$toast.ShowError(e.error || e.message || 'Error desconocido');
 				}
+			},
+			//MODIFY - Method renewal
+			async renovar(invoice, index)
+			{
+				try
+				{
+					this.$root.$processing.show('Renovando factura...');
+					const res = await this.service.renovar(invoice.invoice_id);
+					this.$root.$processing.hide();
+					this.$root.$toast.ShowSuccess(`Factura Nro. ${invoice.invoice_number} renovada correctamente`);
+					await Promise.all([this.getInvoices(1)]);
+				}
+				catch(e)
+				{
+					this.$root.$processing.hide();
+					console.log(e);
+					this.$root.$toast.ShowError(e.error || e.message || 'Error desconocido');
+				}
 			}
+			//*************************************
 		},
 		async mounted()
 		{

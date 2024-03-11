@@ -76,10 +76,36 @@ class ServiceFacturacion(ServiceSiat):
 			'codigoMotivo': motivo,
 			'cuf': cuf
 		}]
+		print(solicitud, '***********************')
 		self.wsdl = SiatInvoice.getWsdl(self.modalidad, self.ambiente, documentoSector)
 		res = self.callAction('anulacionFactura', solicitud)
 		
 		return res
+	
+	#MODIFY - Method Renew Invoice
+	def renovacionFactura(self, motivo, cuf, sucursal: int, puntoventa: int, tipoFactura: int, tipoEmision: int, 
+		documentoSector: int):
+		
+		solicitud = [{
+			'cuis': self.cuis,
+			'cufd': self.cufd,
+			'nit': self.nit,
+			'codigoSistema': self.codigoSistema,
+			'codigoAmbiente': self.ambiente,
+			'codigoModalidad': self.modalidad,
+			'codigoSucursal': sucursal,
+			'codigoPuntoVenta': puntoventa,
+			'codigoEmision': tipoEmision,
+			'tipoFacturaDocumento': tipoFactura,
+			'codigoDocumentoSector': documentoSector,
+			'codigoMotivo': motivo,
+			'cuf': cuf
+		}]
+		self.wsdl = SiatInvoice.getWsdl(self.modalidad, self.ambiente, documentoSector)
+		res = self.callAction('reversionAnulacionFactura', solicitud)
+		
+		return res
+	#**********************************************************
 		
 	def recepcionPaqueteFactura(self, facturas: list, codigoEvento: int, tipoEmision: int, tipoFactura: int, cafc=None):
 		

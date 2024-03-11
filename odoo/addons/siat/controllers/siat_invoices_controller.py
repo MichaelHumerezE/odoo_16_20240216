@@ -55,6 +55,7 @@ class SiatSyncController(Controller, SiatController):
 			#MODIFY - TOTAL ROUNDED 2 DECIMAL
 			data['total'] = round(data['total'], 2)
 			#****************************************
+			print(data)
 			invoice = service.create(data)
 			resource = ResourceInvoice(invoice)
 			return request.make_json_response({
@@ -97,6 +98,37 @@ class SiatSyncController(Controller, SiatController):
 			'code': 200,
 			'data': resource.dict()
 		})
+	
+	#MODIFY - Route api renewal invoice
+	@http.route(['/siat/invoices/<int:id>/renovar'], type='http', auth='user', methods=['GET'])
+	def renewal(self, **params):
+		self._check_session()
+		_id = params.get('id')
+		print('+++++++++++++++++++++++************************aa')
+		items = request.env['siat.invoice'].browse(_id)
+		try:
+			if len(items) <= 0:
+				raise Exception('La factura no existe')
+			invoice = items[0]
+			service = ServiceInvoices()
+			service.renovar(invoice)
+			# service.send_customer_email_with_thread(invoice)
+			return request.make_json_response({
+				'status': 'ok',
+				'code': 200,
+				'data': None,
+				'message': 'La factura fue reenviada correctamente'
+			})
+		except Exception as e:
+			print(traceback.print_exc())
+			code = 500
+			return request.make_json_response({
+				'status': 'error',
+				'code': code,
+				'data': None,
+				'error': str(e)
+			}, status=code)
+	#***************************************************************
 
 	@http.route(['/siat/invoices/<int:id>/reenviar'], type='http', auth='user', methods=['GET'])
 	def forward(self, **params):

@@ -217,7 +217,6 @@ class ServiceInvoices(ServiceSiat):
 		return siatInvoice
 
 	def create(self, invoiceData: dict):
-
 		current_user = request.env['res.users'].browse(request.env.uid)
 		user_tz = request.env.user.tz or 'America/La_Paz' # pytz.timezone('America/La_Paz') #pytz.utc
 		print('USER TIMEZONE', user_tz)
@@ -243,13 +242,11 @@ class ServiceInvoices(ServiceSiat):
 			#MODIFY - Only for purchase sale - documentary sector
 			if activeEvent.evento_id in [5,6,7]:
 				if (config['cafc']):
+					#MODIFY - Load Cafc
 					facturaSiat.cabecera.cafc = json.loads(config['cafc'])['compra_venta']['cafc']
+					#******************************************************
 					#MODIFY - Subtract 4 hours from the incoming date
-					fecha_original = datetime.strptime(invoiceData['invoice_date_time'], "%Y-%m-%dT%H:%M:%S.%fZ")
-					fecha_original = fecha_original - timedelta(hours=4)
-					fecha_original = fecha_original.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-					fecha_original = fecha_original.replace('Z', '')
-					facturaSiat.cabecera.fechaEmision = fecha_original
+					facturaSiat.cabecera.fechaEmision = invoiceData['invoice_date_time']
 					#******************************************************
 					#MODIFY - Update cufd event
 					facturaSiat.cabecera.cufd = activeEvent.cufd_evento
@@ -274,7 +271,6 @@ class ServiceInvoices(ServiceSiat):
 			invoice_dict['tipo_emision'] = siat_constants.TIPO_EMISION_OFFLINE
 			invoice_dict['control_code'] = cufd_evento.codigo_control
 			invoice_dict['evento_id'] = activeEvent.id
-
 		else:
 			if invoiceData['tipo_documento_identidad'] == 5 and invoiceData['data'].get('excepcion', 0) != 1:
 				service_codes = self.serviceSync.getSiatServiceCodes()
@@ -302,8 +298,9 @@ class ServiceInvoices(ServiceSiat):
 		invoice_dict['tipo_factura_documento'] = siat_constants.TIPO_FACTURA_CREDITO_FISCAL
 		invoice_dict['ambiente'] = config['ambiente']
 		invoice_dict['company_id'] = request.env.company.id
-		
+	
 		invoice = request.env['siat.invoice'].create(invoice_dict)
+		print(invoice.invoice_datetime)
 		# for detalle in facturaSiat.detalle:
 		for request_item in invoiceData['items']:
 			# invoice_item = self.siatDetailToInvoiceDetail(detalle)
@@ -421,6 +418,47 @@ class ServiceInvoices(ServiceSiat):
 		self.send_customer_void_email(invoice)
 
 		return invoice
+	
+	#MODIFY - Method renew
+	def renovar(self, invoice: Invoice):
+		config = self.getConfig()
+		cuis = self.serviceSync.sync_cuis(invoice.codigo_sucursal, invoice.punto_venta)
+		cufd = self.serviceSync.sync_cufd(invoice.codigo_sucursal, invoice.punto_venta)
+		service = SiatFactory.obtenerServicioFacturacion(
+			config,
+			cuis['codigo'],
+			cufd.codigo,
+			cufd.codigo_control
+		)
+		service.debug = True
+		res = service.renovacionFactura(
+			0,
+			invoice.cuf,
+			invoice.codigo_sucursal,
+			invoice.punto_venta,
+			invoice.tipo_factura_documento,
+			# invoice.tipo_emision,
+			siat_constants.TIPO_EMISION_ONLINE,
+			invoice.codigo_documento_sector
+		)
+
+		# if (res['codigoEstado'] in [905, 906]) is False:
+		if res['codigoEstado'] != 907:
+			print('SIAT ANULAR ERROR', res)
+			raise Exception('No se puedo anular la factura')
+
+		print('SIAT RENEW RES', res)
+
+		void_datetime = siat_functions.sb_siat_format_datetime(datetime.now())
+		invoice.write({
+			'status': Invoice.STATUS_RENOVATED,
+			'void_datetime': datetime.strptime(void_datetime, siat_constants.DATETIME_FORMAT),
+		})
+
+		self.send_customer_void_email(invoice)
+
+		return invoice
+	#*********************************************************************************
 
 	def send_customer_void_email(self, invoice: Invoice):
 		data = {}

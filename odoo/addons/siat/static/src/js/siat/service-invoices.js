@@ -178,15 +178,20 @@
 		async buscar(keyword)
 		{
 			const res = await this.Get(`/siat/invoices/search?keyword=${keyword}`);
-			
 			return res;
 		}
 		async reenviar(id)
 		{
 			const res = await this.Get(`/siat/invoices/${id}/reenviar`);
-
 			return res;
 		}
+		//MODIFY - Api Renewal invoice
+		async renovar(id)
+		{
+			const res = await this.Get(`/siat/invoices/${id}/renovar`);
+			return res;
+		}
+		//**********************************************************
 	}
 	ns.ServiceInvoices = ServiceInvoices;
 })(SBFramework.Services);

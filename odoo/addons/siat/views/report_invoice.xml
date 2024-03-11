@@ -35,7 +35,7 @@
 	
 	<template id="siat_invoice_info">
 		<div style="text-align:center;">
-			<div style="font-size:22px;font-weight:bold;">FACTURA1</div>
+			<div style="font-size:22px;font-weight:bold;">FACTURA</div>
 			<div>(Con Derecho a Credito Fiscal)</div>
 		</div>
 		<br/><br />
@@ -46,7 +46,7 @@
 					<div><b>Fecha:</b></div>
 				</td>
 				<td>
-					<div t-field="siat_invoice.invoice_datetime"></div>
+					<div><span t-out="siat_invoice.get_date_time()"></span> </div>
 				</td>
 				<td>
 					<div><b>NIT/CI/CEX:</b></div>
@@ -222,7 +222,7 @@
 					<t t-set="siat_invoice" t-value="o" />
 					<div style="text-align:center;margin-bottom:6px;">
 						<div style="text-align:center;font-weight:bold;">
-							<div>FACTURA2</div>
+							<div>FACTURA</div>
 							<div>(Con Derecho a Credito Fiscal)</div>
 						</div>
 						<t t-call="siat.siat_invoice_header_company" />
@@ -233,7 +233,7 @@
 					<div>
 						<div>
 							<b>Fecha:</b>
-							<span t-field="siat_invoice.invoice_datetime"></span>
+							<span t-out="siat_invoice.get_date_time()"></span>
 						</div>
 						<div>
 							<b>NIT/CI/CEX:</b>

@@ -20,7 +20,9 @@ class ReportInvoice(models.AbstractModel):
 		cufds = self.env['siat.cufd'].search([('codigo', '=', invoice.cufd)], limit=1)
 
 		#MODIFY - View hour current
-		invoice.invoice_datetime = invoice.invoice_datetime + timedelta(hours=4)
+		print(invoice.invoice_datetime)
+		#invoice.invoice_datetime = invoice.invoice_datetime + timedelta(hours=4)
+		print(invoice.invoice_datetime)
 		#***********************************************
 		
 		#for invoice in invoices:
@@ -33,7 +35,6 @@ class ReportInvoice(models.AbstractModel):
 		qr64 = siat_functions.sb_build_qr(siat_url)
 		# print('SIAT URL: ', siat_url, 'QR64: ', qr64.decode('utf8'))
 		amount_text = siat_functions.sb_numeroToLetras(invoice.total) + ' BOLIVIANOS'
-		print(invoice.invoice_datetime)
 		return {
 			'docs': invoices,
 			'amount_text': amount_text, # .encode('ascii', 'xmlcharrefreplace'),
