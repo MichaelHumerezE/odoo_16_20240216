@@ -32,7 +32,6 @@ class SiatSyncController(Controller, SiatController):
 		sucursal = int(params.get('sucursal', 0))
 		puntoventa = int( params.get('puntoventa', 0) )
 		
-		
 		try:
 			service  = ServiceSiatSync()
 			cuis = service.sync_cuis(sucursal, puntoventa)
@@ -52,7 +51,7 @@ class SiatSyncController(Controller, SiatController):
 			'/siat/sync/cufd', 
 			'/siat/sync/cufd/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>',
 			'/siat/sync/cufd/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>/renew/<int:renew>'
-		], 
+		],
 		type='http', auth='user', methods=['GET'])
 	def sync_cufd(self, **params):
 		self._check_session()
@@ -114,10 +113,20 @@ class SiatSyncController(Controller, SiatController):
 		puntoventa = int(params.get('puntoventa', 0))
 		service  = ServiceSiatSync()
 		res = service.sync_unidades_medida(sucursal, puntoventa)
+
+		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
+	
+	@http.route(['/siat/sync/unidades_medida','/siat/sync/unidades_medida/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
+	def sync_unidades_medida_piloto(self, **params):
+		self._check_session()
+		sucursal = int(params.get('sucursal', 0))
+		puntoventa = int(params.get('puntoventa', 0))
+		service  = ServiceSiatSync()
+		res = service.sync_unidades_medida(sucursal, puntoventa)
 		
 		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
 		
-	@http.route(['/siat/sync/tipos_moneda'], auth='user', methods=['GET'])
+	@http.route(['/siat/sync/tipos_moneda','/siat/sync/tipos_moneda/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
 	def sync_tipos_moneda(self, **params):
 		self._check_session()
 		sucursal = int(params.get('sucursal', 0))
@@ -136,8 +145,18 @@ class SiatSyncController(Controller, SiatController):
 		res = service.sync_documentos_identidad(sucursal, puntoventa)
 		
 		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
+	
+	@http.route(['/siat/sync/documentos_identidad','/siat/sync/documentos_identidad/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
+	def sync_documentos_identidad(self, **params):
+		self._check_session()
+		sucursal = int(params.get('sucursal', 0))
+		puntoventa = int(params.get('puntoventa', 0))
+		service  = ServiceSiatSync()
+		res = service.sync_documentos_identidad(sucursal, puntoventa)
 		
-	@http.route(['/siat/sync/productos_servicios'], auth='user', methods=['GET'])
+		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
+		
+	@http.route(['/siat/sync/productos_servicios','/siat/sync/productos_servicios/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
 	def sync_productos_servicios(self, **params):
 		self._check_session()
 		sucursal = int(params.get('sucursal', 0))
@@ -156,8 +175,18 @@ class SiatSyncController(Controller, SiatController):
 		res = service.sync_metodos_pago(sucursal, puntoventa)
 		
 		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
+	
+	@http.route(['/siat/sync/metodos_pago','/siat/sync/metodos_pago/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
+	def sync_metodos_pago_piloto(self, **params):
+		self._check_session()
+		sucursal = int(params.get('sucursal', 0))
+		puntoventa = int(params.get('puntoventa', 0))
+		service  = ServiceSiatSync()
+		res = service.sync_metodos_pago(sucursal, puntoventa)
 		
-	@http.route(['/siat/sync/actividades'], auth='user', methods=['GET'])
+		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
+		
+	@http.route(['/siat/sync/actividades','/siat/sync/actividades/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
 	def sync_actividades(self, **params):
 		self._check_session()
 		sucursal = int(params.get('sucursal', 0))
@@ -176,8 +205,18 @@ class SiatSyncController(Controller, SiatController):
 		res = service.sync_actividad_documento_sector(sucursal, puntoventa)
 		
 		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
+	
+	@http.route(['/siat/sync/actividades_doc_sector','/siat/sync/actividades_doc_sector/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
+	def sync_actividades_doc_sector_piloto(self, **params):
+		self._check_session()
+		sucursal = int(params.get('sucursal', 0))
+		puntoventa = int(params.get('puntoventa', 0))
+		service  = ServiceSiatSync()
+		res = service.sync_actividad_documento_sector(sucursal, puntoventa)
 		
-	@http.route(['/siat/sync/leyendas'], auth='user', methods=['GET'])
+		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
+		
+	@http.route(['/siat/sync/leyendas','/siat/sync/leyendas/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
 	def sync_leyendas(self, **params):
 		self._check_session()
 		sucursal = int(params.get('sucursal', 0))
@@ -187,7 +226,7 @@ class SiatSyncController(Controller, SiatController):
 		
 		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
 		
-	@http.route(['/siat/sync/tipos_habitacion'], auth='user', methods=['GET'])
+	@http.route(['/siat/sync/tipos_habitacion','/siat/sync/tipos_habitacion/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
 	def sync_tipos_habitacion(self, **params):
 		self._check_session()
 		sucursal = int(params.get('sucursal', 0))
@@ -197,7 +236,7 @@ class SiatSyncController(Controller, SiatController):
 		
 		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
 		
-	@http.route(['/siat/sync/eventos'], auth='user', methods=['GET'])
+	@http.route(['/siat/sync/eventos','/siat/sync/eventos/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
 	def sync_eventos(self, **params):
 		self._check_session()
 		sucursal = int(params.get('sucursal', 0))
@@ -216,8 +255,18 @@ class SiatSyncController(Controller, SiatController):
 		res = service.sync_motivos_anulacion(sucursal, puntoventa)
 		
 		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
+	
+	@http.route(['/siat/sync/motivos_anulacion','/siat/sync/motivos_anulacion/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
+	def sync_motivos_anulacion_piloto(self, **params):
+		self._check_session()
+		sucursal = int(params.get('sucursal', 0))
+		puntoventa = int(params.get('puntoventa', 0))
+		service  = ServiceSiatSync()
+		res = service.sync_motivos_anulacion(sucursal, puntoventa)
 		
-	@http.route(['/siat/sync/tipos_documentos_sector'], auth='user', methods=['GET'])
+		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
+		
+	@http.route(['/siat/sync/tipos_documentos_sector','/siat/sync/tipos_documentos_sector/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
 	def sync_documentos_sector(self, **params):
 		self._check_session()
 		sucursal = int(params.get('sucursal', 0))
@@ -227,7 +276,7 @@ class SiatSyncController(Controller, SiatController):
 		
 		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
 		
-	@http.route(['/siat/sync/tipos_emision'], auth='user', methods=['GET'])
+	@http.route(['/siat/sync/tipos_emision','/siat/sync/tipos_emision/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
 	def sync_emision(self, **params):
 		self._check_session()
 		sucursal = int(params.get('sucursal', 0))
@@ -246,8 +295,18 @@ class SiatSyncController(Controller, SiatController):
 		res = service.sync_tipos_puntoventa(sucursal, puntoventa)
 		
 		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
+	
+	@http.route(['/siat/sync/tipos_puntoventa','/siat/sync/tipos_puntoventa/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
+	def sync_tipos_puntoventa_piloto(self, **params):
+		self._check_session()
+		sucursal = int(params.get('sucursal', 0))
+		puntoventa = int(params.get('puntoventa', 0))
+		service  = ServiceSiatSync()
+		res = service.sync_tipos_puntoventa(sucursal, puntoventa)
 		
-	@http.route(['/siat/sync/tipos_facturas'], auth='user', methods=['GET'])
+		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
+		
+	@http.route(['/siat/sync/tipos_facturas','/siat/sync/tipos_facturas/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])
 	def sync_tipos_facturas(self, **params):
 		self._check_session()
 		sucursal = int(params.get('sucursal', 0))

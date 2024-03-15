@@ -45,7 +45,6 @@
 		{
 			const headers = this.getHeaders();
 			const res = await this.Get(`/siat/puntos-venta/sync`, headers);
-			
 			return res;
 		}
 	}

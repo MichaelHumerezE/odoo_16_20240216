@@ -53,7 +53,7 @@ class ServiceFacturacion(ServiceSiat):
 		self.wsdl = invoice.getEndpoint(self.modalidad, self.ambiente)
 		
 		data = [vars(solicitud)];
-		# print(data)
+		print(data, 'RECEPCION FACTURA')
 		res = self.callAction('recepcionFactura', data)
 		
 		return res
@@ -111,6 +111,7 @@ class ServiceFacturacion(ServiceSiat):
 		
 		xmlFacturas = []
 		for factura in facturas:
+			print(factura.cabecera.cuf, factura.cabecera.telefono, 'asdasdasdasdasd************************')
 			factura.cabecera.cafc = cafc
 			if not factura.cabecera.cuf:
 				factura.buildCuf(self.modalidad, tipoEmision, tipoFactura, self.codigoControl)

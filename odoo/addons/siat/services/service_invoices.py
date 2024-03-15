@@ -18,6 +18,7 @@ from ..libsiat.invoices.siatinvoice import SiatInvoice
 from ..libsiat.classes.siat_exception import SiatException, SiatExceptionInvalidNit
 import json
 from datetime import datetime, timedelta
+import re
 
 
 class ServiceInvoices(ServiceSiat):
@@ -116,13 +117,12 @@ class ServiceInvoices(ServiceSiat):
 			detalleSiat.unidadMedida = item['unidad_medida']
 			detalleSiat.precioUnitario = item['price']
 			detalleSiat.montoDescuento = item['discount']
-			detalleSiat.subTotal = (detalleSiat.cantidad * detalleSiat.precioUnitario) - detalleSiat.montoDescuento
+			detalleSiat.subTotal = round(((detalleSiat.cantidad * detalleSiat.precioUnitario) - detalleSiat.montoDescuento), 2)
 			detalleSiat.numeroSerie = item.get('numero_serie', '')
 			detalleSiat.numeroImei = item['numero_imei']
-
-			if detalleSiat.montoDescuento >= detalleSiat.subTotal:
+			if detalleSiat.subTotal <= 0:
 				raise Exception(
-					'El descuento del item {0} no puede ser igual o mayor al subtotal'.format(item.get('product_name')))
+					'El descuento del item {0} no puede ser igual o mayor al subtotal del detalle agregado '.format(item.get('product_name')))
 
 			facturaSiat.detalle.append(detalleSiat)
 
@@ -158,7 +158,9 @@ class ServiceInvoices(ServiceSiat):
 		return facturaSiat
 
 	def invoiceToSiatInvoice(self, invoice: Invoice):
-		config = self.getConfig()
+		#MODIFY - 
+		config = self.getConfig(invoice.codigo_sucursal)
+		#******************************************
 		siatInvoice = SiatFactory.construirFactura(
 			invoice.codigo_documento_sector,
 			config.get('modalidad')
@@ -217,14 +219,31 @@ class ServiceInvoices(ServiceSiat):
 		return siatInvoice
 
 	def create(self, invoiceData: dict):
+		#MODIFY - Verify if invoice is POS or Siat (Set Discount and Nit/Ci/Complement)
+		if 'invoice_id' not in invoiceData:
+			nc = re.split(r'\s+|-', invoiceData['nit_ruc_nif'])
+			if len(nc) == 2:
+				invoiceData['nit_ruc_nif'] = nc[0]
+				invoiceData['complemento'] = nc[1]
+			for item in invoiceData['items']:
+				item['discount'] = round((item['price'] * (item['discount']/100)), 2)
+			invoiceData['items'] = invoiceData['items']
+		#**********************************************
+		#MODIFY - Validate Decimals
+		self.verify_decimals(invoiceData)
+		#*******************************
+		#MODIFY - Validate NIT minor sales of the day 
+		self.verify_nit_99003(invoiceData)
+		#*******************************
 		current_user = request.env['res.users'].browse(request.env.uid)
 		user_tz = request.env.user.tz or 'America/La_Paz' # pytz.timezone('America/La_Paz') #pytz.utc
 		print('USER TIMEZONE', user_tz)
 		invoiceData['company_id'] = request.env.company.id
-
-		config 		= self.getConfig()
 		sucursal 	= invoiceData['codigo_sucursal']
 		puntoventa 	= invoiceData['punto_venta']
+		#MODIFY - Load Config With Branch
+		config 		= self.getConfig(sucursal)
+		#**********************************
 		customer 	= request.env['res.partner'].browse(invoiceData['customer_id'])
 		cuis 		= self.serviceSync.sync_cuis(sucursal, puntoventa)
 		cufd 		= self.serviceSync.sync_cufd(sucursal, puntoventa)
@@ -245,7 +264,7 @@ class ServiceInvoices(ServiceSiat):
 					#MODIFY - Load Cafc
 					facturaSiat.cabecera.cafc = json.loads(config['cafc'])['compra_venta']['cafc']
 					#******************************************************
-					#MODIFY - Subtract 4 hours from the incoming date
+					#MODIFY - Load invoice_date_time input
 					facturaSiat.cabecera.fechaEmision = invoiceData['invoice_date_time']
 					#******************************************************
 					#MODIFY - Update cufd event
@@ -275,7 +294,7 @@ class ServiceInvoices(ServiceSiat):
 			if invoiceData['tipo_documento_identidad'] == 5 and invoiceData['data'].get('excepcion', 0) != 1:
 				service_codes = self.serviceSync.getSiatServiceCodes()
 				service_codes.cuis = cuis['codigo']
-				res = service_codes.verificarNit(invoiceData['nit_ruc_nif'])
+				res = service_codes.verificarNit(invoiceData['nit_ruc_nif'], sucursal, puntoventa)
 				print(res)
 				if res['mensajesList'][0]['codigo'] == 994:
 					raise SiatExceptionInvalidNit(res, 'El NIT "{0}" no es valido'.format(invoiceData['nit_ruc_nif']))
@@ -300,7 +319,7 @@ class ServiceInvoices(ServiceSiat):
 		invoice_dict['company_id'] = request.env.company.id
 	
 		invoice = request.env['siat.invoice'].create(invoice_dict)
-		print(invoice.invoice_datetime)
+
 		# for detalle in facturaSiat.detalle:
 		for request_item in invoiceData['items']:
 			# invoice_item = self.siatDetailToInvoiceDetail(detalle)
@@ -346,7 +365,7 @@ class ServiceInvoices(ServiceSiat):
 		cuis = self.serviceSync.sync_cuis(invoice.codigo_sucursal, invoice.punto_venta)
 		cufd = self.serviceSync.sync_cufd(invoice.codigo_sucursal, invoice.punto_venta)
 		service = SiatFactory.obtenerServicioFacturacion(
-			self.getConfig(),
+			self.getConfig(invoice.codigo_sucursal),
 			cuis['codigo'],
 			cufd.codigo,
 			cufd.codigo_control
@@ -383,7 +402,7 @@ class ServiceInvoices(ServiceSiat):
 			raise Exception('La factura no existe')
 		invoice = invoices[0]
 
-		config = self.getConfig()
+		config = self.getConfig(invoice.codigo_sucursal)
 		cuis = self.serviceSync.sync_cuis(invoice.codigo_sucursal, invoice.punto_venta)
 		cufd = self.serviceSync.sync_cufd(invoice.codigo_sucursal, invoice.punto_venta)
 		service = SiatFactory.obtenerServicioFacturacion(
@@ -421,7 +440,7 @@ class ServiceInvoices(ServiceSiat):
 	
 	#MODIFY - Method renew
 	def renovar(self, invoice: Invoice):
-		config = self.getConfig()
+		config = self.getConfig(invoice.codigo_sucursal)
 		cuis = self.serviceSync.sync_cuis(invoice.codigo_sucursal, invoice.punto_venta)
 		cufd = self.serviceSync.sync_cufd(invoice.codigo_sucursal, invoice.punto_venta)
 		service = SiatFactory.obtenerServicioFacturacion(
@@ -464,4 +483,27 @@ class ServiceInvoices(ServiceSiat):
 		data = {}
 		email_template = request.env.ref('siat.siat_invoice_void_email_template')
 		email_template[0].send_mail(invoice.id, force_send=True, email_values=data)
+
+	def verify_decimals (self, invoice):
+		# Convertir el valor a una cadena de texto y contar los dígitos después del punto decimal
+		number: any
+		if '.' in str(invoice['discount']):
+			number = str(invoice['discount']).split('.')[1]
+			if len(number) > 2:
+				raise Exception('El Descuento general debe contener como máximo 2 decimales')
+		for request_item in invoice['items']:
+			if '.' in str(request_item['price']):
+				number = str(request_item['price']).split('.')[1]
+				if len(number) > 2:
+					raise Exception('El Precio del producto ' + request_item['product_name']  + ' debe contener como máximo 2 decimales')
+			if '.' in str(request_item['discount']):
+				number = str(request_item['discount']).split('.')[1]
+				if len(number) > 2:
+					raise Exception('El Descuento del producto ' + request_item['product_name']  + ' debe contener como máximo 2 decimales')()
+				
+	def verify_nit_99003 (self, invoice):
+		if(invoice['nit_ruc_nif'] == 99003):
+			for request_item in invoice['items']:
+				if ((request_item['price'] * request_item['quantity'] - request_item['discount']) > 5):
+					raise Exception('El subtotal del producto ' + request_item['product_name']  + ' debe tener un valor máximo de 5 Bs (Ventas Menores del día)')
 

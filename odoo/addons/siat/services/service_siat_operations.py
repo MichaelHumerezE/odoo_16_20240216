@@ -20,11 +20,10 @@ class ServiceSiatOperations(ServiceSiatSync):
 		super().__init__()
 
 		self.serviceOperaciones = ServiceOperaciones()
-		self.serviceOperaciones.setConfig(self.getConfig())
+		self.serviceOperaciones.setConfig(self.getConfig(0))
 
 		
 	def nitValido(self, nit):
-		
 		res = self.serviceOperaciones.verificarNit(nit)
 		print(res)
 		

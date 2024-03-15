@@ -39,5 +39,5 @@ class InvoiceDetail(SiatObject):
 			raise Exception('Error de datos en el detalle "{0}" [precioUnitario]'.format(self.descripcion))
 		if float(self.subTotal) <= 0:
 			raise Exception('Error de datos en el detalle "{0}" [subTotal]'.format(self.descripcion))
-		if float(self.montoDescuento) >= float(self.subTotal):
-			raise Exception('Error de datos en el detalle "{0}" [montoDescuento] no puede ser mayor o igual a [subTotal]'.format(self.descripcion))
+		#if float(self.montoDescuento) >= float(self.subTotal):
+		#	raise Exception('Error de datos en el detalle "{0}" [montoDescuento] no puede ser mayor o igual a [subTotal]'.format(self.descripcion))

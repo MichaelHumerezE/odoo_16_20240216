@@ -126,7 +126,7 @@ def testRecepcionFactura():
 		res = recepcionFactura(sucursal, puntoventa, factura, tipoFactura)
 		print('RESPONSE RECEPCION', res)
 		print('FACTURA CUFD:', factura.cabecera.cuf)
-		print('SIAT URL: ', 'https://pilotosiat.impuestos.gob.bo/consulta/QR?nit={0}&cuf={1}&numero={2}&t=1'.format(
+		print('SIAT URL: ', 'https://pilotosiat.impuestos.gob.bo/consulta/QR?nit={0}&cuf={1}&numero={2}&t=2'.format(
 			cfg['nit'],
 			factura.cabecera.cuf,
 			factura.cabecera.numeroFactura

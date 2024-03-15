@@ -74,24 +74,49 @@ class SiatPuntosVentaController(Controller, SiatController):
         self._check_session()
         try:
             service = ServiceSiatOperations()
-            res = service.consulta_puntos_venta(sucursal)
-            print(res)
-            for item in res['listaPuntosVentas']:
-                pos = request.env['siat.pos'].get_by_code(item['codigoPuntoVenta'])
-                print('POST', pos)
-                if not pos:
+            branchs = request.env['siat.branch'].search([])
+            i = 0
+            j = 0
+            for branch in branchs:
+                #MODIFY - Verify SCN - PV0
+                pv = request.env['siat.pos'].search([('codigo', '=', 0), ('codigo_sucursal', '=', branch.codigo)], limit=1)
+                if not pv:
                     request.env['siat.pos'].create({
-                        'codigo_sucursal': sucursal,
-                        'codigo': item['codigoPuntoVenta'],
-                        'tipo_id': 1,
-                        'tipo_descripcion': item['tipoPuntoVenta'],
-                        'nombre': item['nombrePuntoVenta'],
-                        'descripcion': '',
-                        'direccion': '',
-                        'ciudad': '',
-                        'telefono': '',
-                    })
-
+                            'codigo_sucursal': branch.codigo,
+                            'codigo': 0,
+                            'tipo_id': 5,
+                            'tipo_descripcion': 'PUNTO DE VENTA CAJEROS',
+                            'nombre': 'SUC-' + str(branch.codigo) + ' PUNTO 0',
+                            'sucursal_id': str(branch.id),
+                            'descripcion': '',
+                            'direccion': '',
+                            'ciudad': '',
+                            'telefono': '',
+                        })
+                #**********************************************************
+                res = service.consulta_puntos_venta(branch.codigo)
+                print(res)
+                i += 1
+                print('i:',i)
+                for item in res['listaPuntosVentas']:
+                    #MODIFY - Verify SCN - PVN
+                    pos = request.env['siat.pos'].search([('codigo', '=', item['codigoPuntoVenta']), ('codigo_sucursal', '=', branch.codigo)], limit=1)
+                    j += 1
+                    print('j:', j)
+                    if not pos:
+                        request.env['siat.pos'].create({
+                            'codigo_sucursal': branch.codigo,
+                            'codigo': item['codigoPuntoVenta'],
+                            'tipo_id': 5,
+                            'tipo_descripcion': item['tipoPuntoVenta'],
+                            'nombre': item['nombrePuntoVenta'],
+                            'sucursal_id': str(branch.id),
+                            'descripcion': '',
+                            'direccion': '',
+                            'ciudad': '',
+                            'telefono': '',
+                        })
+                    #**************************************************************
             return request.make_json_response({
                 'status': 'ok',
                 'code': 200,
@@ -125,6 +150,3 @@ class SiatPuntosVentaController(Controller, SiatController):
                 'data': None,
                 'error': str(e)
             })
-
-
-

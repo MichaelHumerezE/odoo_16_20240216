@@ -2,11 +2,11 @@
 <odoo>
 	<template id="siat_invoice_header_company">
 		<div t-out="siat_config['razonSocial']"></div>
-		<div t-out="sucursal"></div>
+		<div><span t-out="siat_invoice.get_sucursal()"></span></div>
 		<div>Nro. Punto de Venta <span t-field="siat_invoice.punto_venta"></span></div>
 		<div t-out="cufd.direccion"></div>
-		<div>Telf: <span t-out="telefono"></span></div>
-		<div t-out="ciudad"></div>
+		<div>Telf: <span t-out="siat_invoice.get_sucursal_telefono()"></span></div>
+		<div><span t-out="siat_invoice.get_sucursal_ciudad()"></span></div>
 	</template>
 	
 	<template id="siat_invoice_header_data">
@@ -52,7 +52,7 @@
 					<div><b>NIT/CI/CEX:</b></div>
 				</td>
 				<td>
-					<div t-field="siat_invoice.nit_ruc_nif"></div>
+					<div><span t-out="siat_invoice.get_nit_ruc_nif()"></span> </div>
 				</td>
 			</tr>
 			<tr>
@@ -237,7 +237,7 @@
 						</div>
 						<div>
 							<b>NIT/CI/CEX:</b>
-							<span t-field="siat_invoice.nit_ruc_nif"></span>
+							<span t-out="siat_invoice.get_nit_ruc_nif()"></span>
 						</div>
 						<div>
 							<b>Nombre/Razon Social:</b>

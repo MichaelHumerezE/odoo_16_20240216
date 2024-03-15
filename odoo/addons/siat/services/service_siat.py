@@ -12,7 +12,7 @@ class ServiceSiat:
 		company_id = int(request.httprequest.cookies.get('cids'))
 		request.update_context(allowed_company_ids=[company_id])
 
-	def getConfig(self):
+	def getConfig(self, codigo_sucursal):
 		'''
 		cfg = {
 			'modalidad': siat_constants.MOD_COMPUTARIZADA_ENLINEA,
@@ -41,8 +41,13 @@ class ServiceSiat:
 			cfg['codigoAmbiente'] = cfg['ambiente']
 			cfg['nombreSistema'] = cfg['nombre_sistema']
 			cfg['razonSocial'] = cfg['razon_social']
-			cfg['ciudad'] = 'Santa Cruz'
-			cfg['telefono'] = '77739265'
+			#MODIFY - Load Branch
+			branch = request.env['siat.branch'].search([('codigo', '=', codigo_sucursal)], limit=1)
+			if not branch:
+				raise Exception('Sucursal no encontrada verificque los datos de la sucursal perteneciente al punto de venta')
+			#**********************************
+			cfg['ciudad'] = branch.ciudad
+			cfg['telefono'] = branch.descripcion
 			cfg['pubCert'] = '{0}/cid-{1}/certificado.pem'.format(constants.DATA_DIR, request.env.company.id)
 			cfg['privCert'] = '{0}/cid-{1}/llave_privada.pem'.format(constants.DATA_DIR, request.env.company.id)
 			# print('SIAT CONFIG', cfg)

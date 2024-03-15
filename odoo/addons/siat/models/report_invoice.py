@@ -18,19 +18,19 @@ class ReportInvoice(models.AbstractModel):
 		invoices = self.env['siat.invoice'].browse( docids )
 		invoice = invoices[0]
 		cufds = self.env['siat.cufd'].search([('codigo', '=', invoice.cufd)], limit=1)
-
-		#MODIFY - View hour current
-		print(invoice.invoice_datetime)
-		#invoice.invoice_datetime = invoice.invoice_datetime + timedelta(hours=4)
-		print(invoice.invoice_datetime)
-		#***********************************************
 		
 		#for invoice in invoices:
 		#	invoice.amount_text = 'literal del monto'
 		service = ServiceInvoices()
-		sucursal = 'Casa Matriz'
-		ciudad = 'Santa Cruz'
-		telefono = '77739265'
+		#MODIFY - Load Branch
+		sucursalBD = self.env['siat.branch'].search([('codigo', '=', invoice.codigo_sucursal)], limit=1)
+		if(invoice.codigo_sucursal == 0):
+			sucursal = sucursalBD.nombre
+		else:
+			sucursal = 'Sucursal No. ' + str(invoice.codigo_sucursal)
+		ciudad = sucursalBD.ciudad
+		telefono = sucursalBD.descripcion
+		#************************************************
 		siat_url = SiatInvoice.buildUrl(invoice.nit_emisor, invoice.cuf, invoice.invoice_number, invoice.ambiente)
 		qr64 = siat_functions.sb_build_qr(siat_url)
 		# print('SIAT URL: ', siat_url, 'QR64: ', qr64.decode('utf8'))
@@ -39,7 +39,7 @@ class ReportInvoice(models.AbstractModel):
 			'docs': invoices,
 			'amount_text': amount_text, # .encode('ascii', 'xmlcharrefreplace'),
 			'cufd': cufds[0] if len(cufds) > 0 else None,
-			'siat_config': service.getConfig(),
+			'siat_config': service.getConfig(invoice.codigo_sucursal),
 			'sucursal': sucursal,
 			'ciudad': ciudad,
 			'telefono': telefono,

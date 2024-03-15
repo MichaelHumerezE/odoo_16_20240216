@@ -27,19 +27,32 @@
 		data()
 		{
 			return {
-				lista: []
+				lista: [],
+				codigo_sucursal:this.$parent.priv_sucursal_id,
+				codigo_puntoVenta:this.$parent.priv_puntoventa_id,
 			};	
 		},
 		methods: 
 		{
+			setSucursal() {
+				this.codigo_sucursal = this.$parent.priv_sucursal_id;
+			},
+			setPuntoVenta() {
+				this.codigo_puntoVenta = this.$parent.priv_puntoventa_id;
+			},
 			async getData()
 			{
-				const res = await this.$parent.service.obtenerActividades();
-				
-				console.log(res);
-				this.lista = Array.isArray(res.data.RespuestaListaActividades.listaActividades) ?
-					res.data.RespuestaListaActividades.listaActividades : 
-					[res.data.RespuestaListaActividades.listaActividades];
+				try {
+					// this.$root.$processing.show('Obtenido datos...');
+					const res = await this.$parent.service.obtenerActividades(this.codigo_sucursal, this.codigo_puntoVenta);
+					// this.$root.$processing.hide();
+					this.lista = Array.isArray(res.data.RespuestaListaActividades.listaActividades) ?
+						res.data.RespuestaListaActividades.listaActividades : 
+						[res.data.RespuestaListaActividades.listaActividades];
+				} catch (e) {
+					this.$root.$processing.hide();
+					alert(e.error || e.message || 'Error desconocido');
+				}
 			}
 		},
 		mounted()

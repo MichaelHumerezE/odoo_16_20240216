@@ -20,12 +20,24 @@ class SiatAccountMove(models.Model):
         if to_post.move_type != 'out_invoice':
             return to_post
 
-        print('TO POST', to_post.read())
+        print('TO POST POST', to_post.read())
+        
+        #MODIFY - Multi Branch and  Multi Point of Sale
+        pos = to_post.ref.split('/')
+        pos = self.env['pos.config'].search(
+            domain=[('name', '=', pos[0])],
+            limit=1,
+        )
+        #************************************************
+        #MODIFY - Verify Relation POS with siat_pos
+        if not pos.siat_pos_id:
+            raise Exception('Punto de Venta no asociado a ningún Punto de Venta de SIAT, Vaya a ajustes para configurar la asociacíon correctamente')
+        #***********************************************
 
         invoiceData = {
             'codigo_documento_sector': 1,
-            'codigo_sucursal': 0,
-            'punto_venta': 0,
+            'codigo_sucursal': pos.siat_pos_id.sucursal_id.codigo,
+            'punto_venta': pos.siat_pos_id.codigo,
             'customer_id': to_post.partner_id.id,
             'customer': to_post.partner_id.name,
             'tipo_documento_identidad': 1,

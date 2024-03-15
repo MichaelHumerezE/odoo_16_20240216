@@ -27,7 +27,7 @@ class ServiceSiatSync(ServiceSiat):
 			os.mkdir( self.DATA_DIR )
 			
 		print('SIAT DATA DIR', self.DATA_DIR)
-		cfg = self.getConfig()
+		cfg = self.getConfig(0)
 		# print('SYNC CONFIG', cfg)
 		self._serviceCodes = ServiceCodigos()
 		self._serviceCodes.setConfig(cfg)

@@ -104,12 +104,13 @@ class ServiceSiatEvents(ServiceSiatSync):
 		return event[0]
 		
 	def close(self, event_id):
-
-		#MODIFY - Load config
-		config 		= self.getConfig()
-		#*********************************************
 		
 		event = self.read(event_id)
+
+		#MODIFY - Load config
+		config 		= self.getConfig(event.sucursal_id)
+		#*********************************************
+
 		if event is None:
 			raise Exception('El evento no existe, no se puede cerrar')
 		
@@ -140,7 +141,7 @@ class ServiceSiatEvents(ServiceSiatSync):
 				cufd = self.sync_cufd(event.sucursal_id, event.puntoventa_id, 1)
 
 			serviceOps = ServiceOperaciones()
-			serviceOps.setConfig(self.getConfig())
+			serviceOps.setConfig(self.getConfig(event.sucursal_id))
 			serviceOps.cuis = cuis.get('codigo')
 			serviceOps.cufd = cufd.codigo
 			serviceOps.debug = True
@@ -167,7 +168,7 @@ class ServiceSiatEvents(ServiceSiatSync):
 
 		serviceInvoices = service_invoices.ServiceInvoices()
 		service = SiatFactory.obtenerServicioFacturacion(
-			self.getConfig(),
+			self.getConfig(event.sucursal_id),
 			cuis.get('codigo'),
 			cufd.codigo,
 			cufd.codigo_control
@@ -200,7 +201,7 @@ class ServiceSiatEvents(ServiceSiatSync):
 				else: 
 					raise Exception('El CAFC del evento no existe')
 			#******************************************************
-
+			print(config['telefono'], config['ciudad'], '++++++++++++++++++++')
 			res = service.recepcionPaqueteFactura(
 				siatInvoices,
 				event.codigo_reception,
@@ -261,7 +262,7 @@ class ServiceSiatEvents(ServiceSiatSync):
 		cufd = self.sync_cufd(package.event_id.sucursal_id, package.event_id.puntoventa_id)
 
 		service = SiatFactory.obtenerServicioFacturacion(
-			self.getConfig(),
+			self.getConfig(package.event_id.sucursal_id),
 			cuis.get('codigo'),
 			cufd.codigo,
 			cufd.codigo_control

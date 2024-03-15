@@ -27,7 +27,6 @@
 					<div class="">
 						<select class="form-control form-select" v-model="invoice.punto_venta" required>
 							<option value="">-- punto de venta --</option>
-							<option value="0">Punto de Venta 0 (por defecto)</option>
 							<option v-bind:value="pv.codigo" v-for="(pv, ipv) in puntosventa">
 								({{ pv.codigo }}) {{ pv.nombre }}
 							</option>

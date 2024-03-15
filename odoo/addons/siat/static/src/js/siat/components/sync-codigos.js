@@ -68,7 +68,7 @@
 				try
 				{
 					this.$root.$processing.show('Obtenido datos...');
-					const res = await this.$parent.service.obtenerCuis(renew);
+					const res = await this.$parent.service.obtenerCuis(this.sucursal, this.puntoventa, renew);
 					this.$root.$processing.hide();
 					this.cuis = res.data;
 				}

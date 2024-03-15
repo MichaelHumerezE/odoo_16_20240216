@@ -140,7 +140,32 @@ class Invoice(models.Model):
 
 		return "\n".join(chunks)
 	
+	#MODIFY - Settings Print Invoice
 	def get_date_time(self):
 		Invoice_datetime = self.invoice_datetime
 
 		return Invoice_datetime.strftime("%Y-%m-%d %H:%M:%S")
+	
+	def get_sucursal(self):
+		codigo_sucursal = self.codigo_sucursal
+		if (codigo_sucursal == 0):
+			return 'Casa Matriz'
+		else:
+			return 'Sucursal Nro ' + str(codigo_sucursal)
+	
+	def get_sucursal_ciudad(self):
+		codigo_sucursal = self.codigo_sucursal
+		sucursal = self.env['siat.branch'].search([('codigo', '=', self.codigo_sucursal)], limit=1)
+		return sucursal.ciudad
+	
+	def get_sucursal_telefono(self):
+		codigo_sucursal = self.codigo_sucursal
+		sucursal = self.env['siat.branch'].search([('codigo', '=', self.codigo_sucursal)], limit=1)
+		return sucursal.descripcion
+	#***********************************************************
+		
+	def get_nit_ruc_nif(self):
+		if(self.complemento is False or self.complemento == ''):
+			return self.nit_ruc_nif
+		else:
+			return self.nit_ruc_nif + '-' + self.complemento

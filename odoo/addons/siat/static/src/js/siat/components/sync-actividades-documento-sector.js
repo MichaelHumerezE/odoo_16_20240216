@@ -2,7 +2,7 @@
 {
 	ns.ComSyncActividadesDocumentoSector = {
 		template: `<div id="com-sync-actividades">
-			<div class="mb-3"><button type="button" class="btn btn-primary" v-on:click="getData()">Sincronizar</button></div>
+			<div class="mb-3"><button type="button" class="btn btn-primary" v-on:click="getData(true)">Sincronizar</button></div>
 			<div class="table-responsive">
 				<table class="table table-sm">
 				<thead>
@@ -27,16 +27,30 @@
 		data()
 		{
 			return {
-				lista: []
+				lista: [],
+				codigo_sucursal:this.$parent.priv_sucursal_id,
+				codigo_puntoVenta:this.$parent.priv_puntoventa_id,
 			};	
 		},
 		methods: 
 		{
+			setSucursal() {
+				this.codigo_sucursal = this.$parent.priv_sucursal_id;
+			},
+			setPuntoVenta() {
+				this.codigo_puntoVenta = this.$parent.priv_puntoventa_id;
+			},
 			async getData()
 			{
-				const res = await this.$parent.service.obtenerActividadesDocumentoSector();
-				
-				this.lista = res.data.RespuestaListaActividadesDocumentoSector.listaActividadesDocumentoSector; 
+				try {
+					this.$root.$processing.show('Obtenido datos del sector...');
+					const res = await this.$parent.service.obtenerActividadesDocumentoSector(this.codigo_sucursal, this.codigo_puntoVenta);
+					this.$root.$processing.hide();
+					this.lista = res.data.RespuestaListaActividadesDocumentoSector.listaActividadesDocumentoSector;
+				} catch (e) {
+					this.$root.$processing.hide();
+					alert(e.error || e.message || 'Error desconocido');
+				} 
 			}
 		},
 		mounted()

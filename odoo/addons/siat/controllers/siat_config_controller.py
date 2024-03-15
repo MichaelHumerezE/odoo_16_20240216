@@ -17,7 +17,6 @@ class SiatConfigController(Controller, SiatController):
     def save(self):
         self._check_session()
         try:
-
             if request.env.company.id is None:
                 raise Exception('Identificador de compañia invalido')
 
@@ -32,6 +31,19 @@ class SiatConfigController(Controller, SiatController):
             else:
                 config = request.env['siat.config'].create({**data, 'company_id': request.env.company.id})
 
+            #MODIFY - Verify and Create SC0
+            branch = request.env['siat.branch'].search([('codigo', '=', 0)], limit=1)
+            if not branch:
+                request.env['siat.branch'].create({
+                        'codigo': 0,
+                        'create_uid': 2,
+                        'write_uid': 2,
+                        'nombre': 'Casa Matriz',
+                        'descripcion': 'Telefono',
+                        'direccion': 'Direccion',
+                        'ciudad': 'Ciudad',
+                    })
+            #**********************************************************
             return request.make_json_response({'status': 'ok', 'code': 200, 'data': config.read()[0]})
         except Exception as e:
             print(traceback.print_exc())

@@ -30,7 +30,7 @@ class ReportInvoiceWithPayment(models.AbstractModel):
         data['qr_buffer'] = 'data:image/png;base64,{0}'.format(qr64.decode('utf8'))
         data['amount_text'] = siat_functions.sb_numeroToLetras(data['docs'].siat_invoice_id.total) + ' BOLIVIANOS'
         data['get_unidad_medida'] = InvoiceItem.get_unidad_medida
-        data['siat_config'] = service.getConfig()
+        data['siat_config'] = service.getConfig(data['docs'].siat_invoice_id.codigo_sucursal)
         data['cufd'] = cufds # [0] if len(cufds) > 0 else None,
         # print('REPORT INVOICE DATA', data)
         return data

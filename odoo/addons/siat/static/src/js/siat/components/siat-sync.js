@@ -20,7 +20,6 @@
 							<div class="col-12 col-sm-6">
 								<div class="form-group mb-2">
 									<select v-model="priv_sucursal_id" class="form-control form-select">
-										<option value="0">Sucursal Principal (0)</option>
 										<option v-for="(s, i) in sucursales" v-bind:value="s.codigo">
 										    ({{ s.codigo }}) {{ s.nombre }}
 										</option>
@@ -30,7 +29,6 @@
 							<div class="col-12 col-sm-6">
 								<div class="form-group mb-2">
 									<select v-model="priv_puntoventa_id" class="form-control form-select">
-										<option value="0">Punto Venta Principal (0)</option>
 										<option v-bind:value="pv.codigo" v-for="(pv, pvi) in puntos_venta">{{ pv.nombre }}</option>
 									</select>
 								</div>

@@ -25,15 +25,30 @@
 		data()
 		{
 			return {
-				lista: []
+				lista: [],
+				codigo_sucursal: this.$parent.priv_sucursal_id,
+				codigo_puntoVenta: this.$parent.priv_puntoventa_id,
 			};
 		},
 		methods: 
 		{
+			setSucursal() {
+				this.codigo_sucursal = this.$parent.priv_sucursal_id;
+			},
+			setPuntoVenta() {
+				this.codigo_puntoVenta = this.$parent.priv_puntoventa_id;
+			},
 			async getData()
 			{
-				const res = await this.$parent.service.obtenerEventos();
-				this.lista = res.data.RespuestaListaParametricas.listaCodigos;
+				try {
+					const res = await this.$parent.service.obtenerEventos(this.codigo_sucursal,this.codigo_puntoVenta);
+					this.lista = res.data.RespuestaListaParametricas.listaCodigos;
+				} catch (e) {
+					this.$root.$processing.hide();
+					alert(e.error || e.message || 'Error desconocido');
+				}
+				//const res = await this.$parent.service.obtenerEventos();
+				//this.lista = res.data.RespuestaListaParametricas.listaCodigos;
 			}
 		},
 		created()

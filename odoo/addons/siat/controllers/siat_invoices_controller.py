@@ -17,7 +17,6 @@ from .siat_controller import SiatController
 
 _logger = logging.getLogger(__name__)
 
-
 class SiatSyncController(Controller, SiatController):
 	
 	@http.route([
@@ -50,12 +49,23 @@ class SiatSyncController(Controller, SiatController):
 		service = ServiceInvoices()
 		try:
 			#MODIFY - DISCOUNT STR TO FLOAT
-			data['discount'] = round(float(data['discount']), 2)
+			data['discount'] = float(data['discount'])
 			#****************************************
 			#MODIFY - TOTAL ROUNDED 2 DECIMAL
 			data['total'] = round(data['total'], 2)
 			#****************************************
-			print(data)
+			#MODIFY - SUBTOTAL ROUNDED 2 DECIMAL
+			data['subtotal'] = round(data['subtotal'], 2)
+			#****************************************
+			#MODIFY - TOTAL TAX ROUNDED 2 DECIMAL
+			data['total_tax'] = round(data['total_tax'], 2)
+			#****************************************
+			#MODIFY - ITEMS TOTAL ROUNDED 2 DECIMAL
+			for item in data['items']:
+				item['total'] = round(item['total'], 2)
+			#****************************************
+			data['items'] = data['items']
+			print(data, 'DATA INVOICE ++++++++++++++++++')
 			invoice = service.create(data)
 			resource = ResourceInvoice(invoice)
 			return request.make_json_response({
