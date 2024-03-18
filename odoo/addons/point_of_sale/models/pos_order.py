@@ -151,6 +151,7 @@ class PosOrder(models.Model):
             pos_order._compute_total_cost_in_real_time()
 
         if pos_order.to_invoice and pos_order.state == 'paid':
+            'PAGADO'
             pos_order._generate_pos_order_invoice()
 
         if pos_session._is_capture_system_activated():

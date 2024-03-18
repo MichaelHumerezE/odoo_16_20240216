@@ -26,6 +26,8 @@ odoo.define("point_of_sale.PartnerDetailsEdit", function (require) {
                 mobile: partner.mobile || "",
                 barcode: partner.barcode || "",
                 vat: partner.vat || "",
+                code_type_document: partner.code_type_document || "",
+                complement: partner.complement || "",
                 property_product_pricelist: this.getDefaultPricelist(partner),
             });
 

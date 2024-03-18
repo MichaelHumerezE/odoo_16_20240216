@@ -264,6 +264,7 @@ var PosDB = core.Class.extend({
         return str;
     },
     add_partners: function(partners){
+        console.log(partners)
         var updated = {};
         var new_write_date = '';
         var partner;

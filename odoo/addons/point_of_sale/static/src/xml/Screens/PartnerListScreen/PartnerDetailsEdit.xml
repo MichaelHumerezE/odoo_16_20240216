@@ -91,6 +91,33 @@
                         <span class="label">Tax ID</span>
                         <input class="detail vat" name="vat" t-model="changes.vat" t-on-change="captureChange" />
                     </div>
+                    <div class="partner-detail">
+                        <span class="label">Complemento</span>
+                        <input class="detail" name="complement" t-model="changes.complement" t-on-change="captureChange" />
+                    </div>
+                    <div class="partner-detail">
+                        <span class="label">Tipo de Documento</span>
+                        <select class="detail" name="code_type_document" t-model="changes.code_type_document" t-on-change="captureChange">
+                                <option t-att-value='0' selected> 
+                                    -- Seleccionar un tipo de docuemnto --
+                                </option>
+                                <option t-att-value='1'> 
+                                    CI - Cedula de Identidad
+                                </option>
+                                <option t-att-value='2'>
+                                    CEX - Cedula de Identidad de Extranjero
+                                </option>
+                                <option t-att-value='5'>
+                                    NIT - Número de Identificación Tributaria
+                                </option>
+                                <option t-att-value='3'>
+                                    PAS - Pasaporte
+                                </option>
+                                <option t-att-value='4'>
+                                    OD - Otro Documento
+                                </option>
+                        </select>
+                    </div>
                     <div t-if="env.pos.pricelists.length gt 1" class="partner-detail">
                         <span class="label">Pricelist</span>
                         <select class="detail" name="property_product_pricelist" t-on-change="captureChange" t-model="changes.property_product_pricelist">

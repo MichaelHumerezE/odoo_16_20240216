@@ -19,7 +19,7 @@ class SiatAccountMove(models.Model):
 
         if to_post.move_type != 'out_invoice':
             return to_post
-
+        
         print('TO POST POST', to_post.read())
         
         #MODIFY - Multi Branch and  Multi Point of Sale
@@ -40,9 +40,9 @@ class SiatAccountMove(models.Model):
             'punto_venta': pos.siat_pos_id.codigo,
             'customer_id': to_post.partner_id.id,
             'customer': to_post.partner_id.name,
-            'tipo_documento_identidad': 1,
+            'tipo_documento_identidad': to_post.partner_id.code_type_document,
             'nit_ruc_nif': to_post.partner_id.vat,
-            'complemento': '',
+            'complemento': to_post.partner_id.complement,
             'codigo_metodo_pago': 1,
             'numero_tarjeta': None,
             'total': round(to_post.amount_total,2),
@@ -53,6 +53,7 @@ class SiatAccountMove(models.Model):
             'data': {'excepcion': 0},
             'items': []
         }
+        total = 0
         for line in to_post.invoice_line_ids:
             product_code = line.product_id.default_code
             if not product_code:
@@ -67,12 +68,15 @@ class SiatAccountMove(models.Model):
                 'codigo_actividad': line.product_id.actividad_economica,
                 'codigo_producto_sin': line.product_id.codigo_producto_sin,
                 'price': line.price_unit,
-                'discount': line.discount,
+                'discount': round(line.price_unit * line.quantity * (line.discount/100), 2),
                 'numero_serie': '',
                 'numero_imei': '',
             }
             invoiceData['items'].append(item)
 
+            total += round(((line.quantity * line.price_unit) - item['discount']), 2)
+
+        invoiceData['total'] = total
         print('INVOICE DATA', invoiceData)
 
         service = ServiceInvoices()

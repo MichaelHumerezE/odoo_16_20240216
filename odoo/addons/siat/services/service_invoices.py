@@ -117,7 +117,7 @@ class ServiceInvoices(ServiceSiat):
 			detalleSiat.unidadMedida = item['unidad_medida']
 			detalleSiat.precioUnitario = item['price']
 			detalleSiat.montoDescuento = item['discount']
-			detalleSiat.subTotal = round(((detalleSiat.cantidad * detalleSiat.precioUnitario) - detalleSiat.montoDescuento), 2)
+			detalleSiat.subTotal = round(((detalleSiat.cantidad * detalleSiat.precioUnitario) - item['discount']), 2)
 			detalleSiat.numeroSerie = item.get('numero_serie', '')
 			detalleSiat.numeroImei = item['numero_imei']
 			if detalleSiat.subTotal <= 0:
@@ -220,17 +220,10 @@ class ServiceInvoices(ServiceSiat):
 
 	def create(self, invoiceData: dict):
 		#MODIFY - Verify if invoice is POS or Siat (Set Discount and Nit/Ci/Complement)
-		if 'invoice_id' not in invoiceData:
-			nc = re.split(r'\s+|-', invoiceData['nit_ruc_nif'])
-			if len(nc) == 2:
-				invoiceData['nit_ruc_nif'] = nc[0]
-				invoiceData['complemento'] = nc[1]
-			for item in invoiceData['items']:
-				item['discount'] = round((item['price'] * (item['discount']/100)), 2)
-			invoiceData['items'] = invoiceData['items']
 		#**********************************************
 		#MODIFY - Validate Decimals
-		self.verify_decimals(invoiceData)
+		if 'invoice_id' in invoiceData:
+			self.verify_decimals(invoiceData)
 		#*******************************
 		#MODIFY - Validate NIT minor sales of the day 
 		self.verify_nit_99003(invoiceData)

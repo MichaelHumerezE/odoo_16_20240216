@@ -1829,7 +1829,7 @@ class PosSession(models.Model):
                 'domain': self._get_partners_domain(),
                 'fields': [
                     'name', 'street', 'city', 'state_id', 'country_id', 'vat', 'lang', 'phone', 'zip', 'mobile', 'email',
-                    'barcode', 'write_date', 'property_account_position_id', 'property_product_pricelist', 'parent_name'
+                    'barcode', 'write_date', 'property_account_position_id', 'property_product_pricelist', 'parent_name', 'complement', 'code_type_document'
                 ],
             },
         }

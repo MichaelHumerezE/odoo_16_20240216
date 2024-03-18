@@ -68,7 +68,7 @@ class SiatSyncController(Controller, SiatController):
 		sucursal = params.get('sucursal', 0)
 		puntoventa = params.get('puntoventa', 0)
 		page = params.get('page', 1)
-		events = request.env['siat.event'].search([], order='id desc', limit=25)
+		events = request.env['siat.event'].search([('sucursal_id', '=', sucursal), ('puntoventa_id', '=', puntoventa)], order='id desc', limit=25)
 		items = []
 		for event in events:
 			resource = ResourceEvent(event)

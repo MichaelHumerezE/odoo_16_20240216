@@ -18,6 +18,10 @@ class Partner(models.Model):
     parent_id = fields.Many2one(tracking=3)
     user_id = fields.Many2one(tracking=4)
     vat = fields.Char(tracking=5)
+    #MODIFY - Add Type Document
+    complement = fields.Char(tracking=6)
+    code_type_document = fields.Integer(tracking=7)
+    #********************************************
     # channels
     channel_ids = fields.Many2many('mail.channel', 'mail_channel_member', 'partner_id', 'channel_id', string='Channels', copy=False)
 

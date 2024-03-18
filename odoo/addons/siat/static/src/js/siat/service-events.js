@@ -41,9 +41,9 @@
 			const res = await this.Get(`/siat/eventos/sucursal/${sucursal}/puntoventa/${puntoventa}/page/${page}`)
 			return res;
 		}
-		async syncEventos(sucursal, puntoventa, date)
+		async syncEventos(sucursal, puntoventa)
 		{
-			const res = this.Get(`/siat/eventos/sync/sucursal/${sucursal}/puntoventa/${puntoventa}/fecha/${date}`);
+			const res = await this.Get(`/siat/eventos/sucursal/${sucursal}/puntoventa/${puntoventa}`);
 			
 			return res;
 		}

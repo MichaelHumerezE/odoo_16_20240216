@@ -13,14 +13,13 @@
 					</div>
 					<div class="col-12 col-sm-3">
 						<select class="form-control form-select" v-model="sync_sucursal_id">
-							<option value="0">Sucursal Principal 0 (por defecto)</option>
-							<option v-bind:value="s.code" v-for="(s, si) in sucursales">{{ s.name }}</option>
+							<option value="">-- sucursal --</option>
+							<option v-bind:value="s.codigo" v-for="(s, si) in sucursales">({{ s.codigo }}) {{ s.nombre }}</option>
 						</select>
 					</div>
 					<div class="col-12 col-sm-3">
 						<select class="form-control form-select" v-model="sync_puntoventa_id">
 							<option value="">-- punto de venta --</option>
-							<option value="0">Punto de Venta 0 (por defecto)</option>
 							<option v-for="(pv, ipv) in puntosventa" v-bind:value="pv.codigo">({{ pv.codigo }}) {{ pv.nombre }}</option>
 						</select>
 					</div>
@@ -124,18 +123,17 @@
 								<label>Sucursal</label>
 								<select class="form-control form-select no-select2" required v-model="evento.sucursal_id" required>
 									<option value="">-- sucursal --</option>
-									<option value="0">Sucursal Principal 0 (por defecto)</option>
-									<option v-bind:value="s.code" v-for="(s, si) in sucursales">{{ s.name }}</option>
+									<option v-bind:value="s.code" v-for="(s, si) in sucursales">({{ s.codigo }}) {{ s.nombre }}</option>
 								</select>
-								<div class="invalid-feedback">Debe seleccionar el tipo de moneda</div>
+								<div class="invalid-feedback">Debe seleccionar la sucursal</div>
 							</div>
 							<div class="mb-3">
 								<label>Punto de Venta</label>
 								<select class="form-control form-select no-select2" required v-model="evento.puntoventa_id">
-									<option value="">-- tipo --</option>
+									<option value="">-- punto de venta --</option>
 									<option value="0">Punto de venta 0</option>
 									<template v-for="(pv, pvi) in puntosventa">
-										<option v-bind:value="pv.codigo">({{ pv.codigo }}) {{ pv.nombre }} ({{ pv.tipo }})</option>
+										<option v-bind:value="pv.codigo">({{ pv.codigo }}) {{ pv.nombre }}</option>
 									</template>
 								</select>
 								<div class="invalid-feedback">Necesita seleccionar un punto de venta</div>
@@ -317,7 +315,6 @@
 			},
 			nuevo()
 			{
-				console.log('nuevo');
 				this.openModal(this.modal);
 				this.evento.fecha_inicio = new Date();
 				this.evento.fecha_fin = null;
@@ -330,7 +327,7 @@
 				try
 				{
 					this.$root.$processing.show('Obteniendo datos...');
-					const res = await this.service.syncEventos(this.sync_sucursal_id, this.sync_puntoventa_id, this.sync_date);
+					const res = await this.service.syncEventos(this.sync_sucursal_id, this.sync_puntoventa_id);
 					this.items = res.data;
 					this.$root.$processing.hide();
 				}
@@ -352,8 +349,9 @@
 			},
 			async getEventos()
 			{
-				const res = await this.serviceInvoices.obtenerEventos();
-				this.eventos = res.data.RespuestaListaParametricas.listaCodigos;	
+				const res = await this.serviceInvoices.obtenerEventos(this.sync_sucursal_id, this.sync_puntoventa_id);
+				this.eventos = res.data.RespuestaListaParametricas.listaCodigos;
+				console.log(this.eventos, 'EVENTOS***************************')
 			},
 			async getCufds()
 			{

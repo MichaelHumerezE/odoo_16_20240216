@@ -114,14 +114,14 @@ odoo.define('point_of_sale.PaymentScreen', function (require) {
             }
         }
         toggleIsToInvoice() {
-            // click_invoice
+            console.log('Click Payment Screen', this.currentOrder)
             this.currentOrder.set_to_invoice(!this.currentOrder.is_to_invoice());
             this.render(true);
         }
         openCashbox() {
             this.env.proxy.printer.open_cashbox();
         }
-        async addTip() {
+        async addTip() { 
             // click_tip
             const tip = this.currentOrder.get_tip();
             const change = this.currentOrder.get_change();
