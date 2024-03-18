@@ -155,7 +155,7 @@ class ServiceSiatEvents(ServiceSiatSync):
 				event.sucursal_id,
 				event.puntoventa_id
 			)
-			print(res)
+			print(res, '***********************************RES')
 			if not res['codigoRecepcionEventoSignificativo'] or res['transaccion'] is False:
 				# error = siat_functions.sb_siat_response_message(res)
 				raise SiatException(res)

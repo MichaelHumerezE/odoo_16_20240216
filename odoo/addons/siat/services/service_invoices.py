@@ -117,7 +117,7 @@ class ServiceInvoices(ServiceSiat):
 			detalleSiat.unidadMedida = item['unidad_medida']
 			detalleSiat.precioUnitario = item['price']
 			detalleSiat.montoDescuento = item['discount']
-			detalleSiat.subTotal = round(((detalleSiat.cantidad * detalleSiat.precioUnitario) - item['discount']), 2)
+			detalleSiat.subTotal = round(((detalleSiat.cantidad * detalleSiat.precioUnitario) - detalleSiat.montoDescuento), 2)
 			detalleSiat.numeroSerie = item.get('numero_serie', '')
 			detalleSiat.numeroImei = item['numero_imei']
 			if detalleSiat.subTotal <= 0:
@@ -222,8 +222,7 @@ class ServiceInvoices(ServiceSiat):
 		#MODIFY - Verify if invoice is POS or Siat (Set Discount and Nit/Ci/Complement)
 		#**********************************************
 		#MODIFY - Validate Decimals
-		if 'invoice_id' in invoiceData:
-			self.verify_decimals(invoiceData)
+		self.verify_decimals(invoiceData)
 		#*******************************
 		#MODIFY - Validate NIT minor sales of the day 
 		self.verify_nit_99003(invoiceData)
@@ -313,6 +312,8 @@ class ServiceInvoices(ServiceSiat):
 	
 		invoice = request.env['siat.invoice'].create(invoice_dict)
 
+		print(invoice_dict)
+
 		# for detalle in facturaSiat.detalle:
 		for request_item in invoiceData['items']:
 			# invoice_item = self.siatDetailToInvoiceDetail(detalle)
@@ -331,9 +332,9 @@ class ServiceInvoices(ServiceSiat):
 				'nandina': request_item.get('nandina', ''),
 				'price': request_item['price'],
 				'quantity': request_item['quantity'],
-				'subtotal': request_item['price'] * request_item['quantity'],
+				'subtotal': round(request_item['price'] * request_item['quantity'], 2),
 				'discount': request_item['discount'],
-				'total': (request_item['price'] * request_item['quantity']) - request_item['discount'],
+				'total': round(((request_item['price'] * request_item['quantity']) - request_item['discount']), 2),
 			}
 			request.env['siat.invoiceitem'].create(invoice_item)
 

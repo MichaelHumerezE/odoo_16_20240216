@@ -123,7 +123,7 @@
 								<label>Sucursal</label>
 								<select class="form-control form-select no-select2" required v-model="evento.sucursal_id" required>
 									<option value="">-- sucursal --</option>
-									<option v-bind:value="s.code" v-for="(s, si) in sucursales">({{ s.codigo }}) {{ s.nombre }}</option>
+									<option v-bind:value="s.codigo" v-for="(s, si) in sucursales">({{ s.codigo }}) {{ s.nombre }}</option>
 								</select>
 								<div class="invalid-feedback">Debe seleccionar la sucursal</div>
 							</div>
@@ -131,7 +131,6 @@
 								<label>Punto de Venta</label>
 								<select class="form-control form-select no-select2" required v-model="evento.puntoventa_id">
 									<option value="">-- punto de venta --</option>
-									<option value="0">Punto de venta 0</option>
 									<template v-for="(pv, pvi) in puntosventa">
 										<option v-bind:value="pv.codigo">({{ pv.codigo }}) {{ pv.nombre }}</option>
 									</template>
