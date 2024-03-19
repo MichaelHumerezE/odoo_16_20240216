@@ -52,7 +52,7 @@ class SiatSyncController(Controller, SiatController):
 			data['discount'] = float(data['discount'])
 			#****************************************
 			#MODIFY - TOTAL ROUNDED 2 DECIMAL
-			data['total'] = round(data['total'], 2)
+			data['total'] = round((data['total'] + float(data['monto_giftcard'])), 2)
 			#****************************************
 			#MODIFY - SUBTOTAL ROUNDED 2 DECIMAL
 			data['subtotal'] = round(data['subtotal'], 2)

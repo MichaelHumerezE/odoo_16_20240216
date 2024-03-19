@@ -30,7 +30,8 @@ class ServiceInvoices(ServiceSiat):
 	
 	def siatInvoiceToInvoice(self, facturaSiat):
 		monto_giftcard = facturaSiat.cabecera.montoGiftCard if facturaSiat.cabecera.montoGiftCard is not None else 0
-		subtotal = facturaSiat.cabecera.montoTotal - monto_giftcard - facturaSiat.cabecera.descuentoAdicional
+		#subtotal = facturaSiat.cabecera.montoTotal + monto_giftcard - facturaSiat.cabecera.descuentoAdicional
+		subtotal = facturaSiat.cabecera.montoTotal + facturaSiat.cabecera.descuentoAdicional
 		total_tax = facturaSiat.cabecera.montoTotal * 0.13
 		invoice = {
 			'customer_id': 0,
@@ -143,12 +144,12 @@ class ServiceInvoices(ServiceSiat):
 		facturaSiat.cabecera.codigoMetodoPago = invoiceData['codigo_metodo_pago']
 		facturaSiat.cabecera.numeroTarjeta = invoiceData['numero_tarjeta']
 		facturaSiat.cabecera.montoTotal = invoiceData['total']
-		facturaSiat.cabecera.montoTotalSujetoIva = facturaSiat.cabecera.montoTotal  # invoiceData['total_tax']
+		facturaSiat.cabecera.montoTotalSujetoIva = round((facturaSiat.cabecera.montoTotal - float(invoiceData['monto_giftcard'])), 2)  # invoiceData['total_tax']
 		facturaSiat.cabecera.codigoMoneda = invoiceData['codigo_moneda']
 		facturaSiat.cabecera.tipoCambio = invoiceData['tipo_cambio']
-		facturaSiat.cabecera.montoTotalMoneda = facturaSiat.cabecera.montoTotal * facturaSiat.cabecera.tipoCambio
-		facturaSiat.cabecera.montoGiftCard = invoiceData['monto_giftcard'] if invoiceData[
-																				  'monto_giftcard'] > 0 else None
+		facturaSiat.cabecera.montoTotalMoneda = round((facturaSiat.cabecera.montoTotal * facturaSiat.cabecera.tipoCambio), 2)
+		facturaSiat.cabecera.montoGiftCard = float(invoiceData['monto_giftcard']) if float(invoiceData[
+																				  'monto_giftcard']) > 0 else None
 		facturaSiat.cabecera.descuentoAdicional = invoiceData['discount']
 		facturaSiat.cabecera.codigoExcepcion = invoiceData['data']['excepcion'] if invoiceData['data'][
 																					   'excepcion'] == 1 else None
@@ -158,7 +159,7 @@ class ServiceInvoices(ServiceSiat):
 		return facturaSiat
 
 	def invoiceToSiatInvoice(self, invoice: Invoice):
-		#MODIFY - 
+		#MODIFY - Load Config of a branch
 		config = self.getConfig(invoice.codigo_sucursal)
 		#******************************************
 		siatInvoice = SiatFactory.construirFactura(
@@ -198,7 +199,7 @@ class ServiceInvoices(ServiceSiat):
 		siatInvoice.cabecera.descuentoAdicional		= invoice.discount
 		siatInvoice.cabecera.montoTotal				= invoice.total
 		siatInvoice.cabecera.montoTotalMoneda		= invoice.total * invoice.tipo_cambio
-		siatInvoice.cabecera.montoTotalSujetoIva	= invoice.total
+		siatInvoice.cabecera.montoTotalSujetoIva	= round((invoice.total - invoice.monto_giftcard), 2)
 		siatInvoice.cabecera.numeroTarjeta			= None if not invoice.numero_tarjeta else invoice.numero_tarjeta
 		siatInvoice.cabecera.codigoExcepcion		= invoice.get_data('excepcion')
 
@@ -288,10 +289,11 @@ class ServiceInvoices(ServiceSiat):
 				service_codes.cuis = cuis['codigo']
 				res = service_codes.verificarNit(invoiceData['nit_ruc_nif'], sucursal, puntoventa)
 				print(res)
-				if res['mensajesList'][0]['codigo'] == 994:
+				if res['mensajesList'][0]['codigo'] == 994 or res['mensajesList'][0]['codigo'] == 987:
 					raise SiatExceptionInvalidNit(res, 'El NIT "{0}" no es valido'.format(invoiceData['nit_ruc_nif']))
 
 			serviceFacturacion = SiatFactory.obtenerServicioFacturacion(config, cuis['codigo'], cufd.codigo, cufd.codigo_control)
+			print(facturaSiat.cabecera.montoTotal, 'FACTURA SIAT - ***********************************')
 			siat_response = serviceFacturacion.recepcionFactura(facturaSiat, siat_constants.TIPO_EMISION_ONLINE, siat_constants.TIPO_FACTURA_CREDITO_FISCAL)
 			print(siat_response, 'SIAT RESPONSE *****************************************')
 			if siat_response is None:
@@ -311,8 +313,6 @@ class ServiceInvoices(ServiceSiat):
 		invoice_dict['company_id'] = request.env.company.id
 	
 		invoice = request.env['siat.invoice'].create(invoice_dict)
-
-		print(invoice_dict)
 
 		# for detalle in facturaSiat.detalle:
 		for request_item in invoiceData['items']:

@@ -75,8 +75,8 @@ class SiatAccountMove(models.Model):
             invoiceData['items'].append(item)
 
             total += round(((line.quantity * line.price_unit) - item['discount']), 2)
-
-        invoiceData['total'] = total
+ 
+        invoiceData['total'] = total - invoiceData['discount']
         print('INVOICE DATA', invoiceData)
 
         service = ServiceInvoices()

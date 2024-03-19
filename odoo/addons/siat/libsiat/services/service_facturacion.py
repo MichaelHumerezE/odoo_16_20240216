@@ -25,7 +25,7 @@ class ServiceFacturacion(ServiceSiat):
 		return b'<?xml version="1.0" encoding="utf-8" standalone="yes" ?>' + xml
 		
 	def recepcionFactura(self, invoice: SiatInvoice, tipoEmision: int, tipoFactura: int):
-		
+		print(invoice.cabecera.montoTotal, 'RECEPCIONFACTURATEST - *********************************')
 		invoice.cabecera.razonSocialEmisor = self.razonSocial
 		invoice.cabecera.nitEmisor = self.nit
 		invoice.cabecera.cufd = self.cufd
