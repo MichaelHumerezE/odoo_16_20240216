@@ -15,6 +15,11 @@
 				{
 					this.$root.$processing.show('Verificando...');
 					const res = await this.serviceEvents.obtenerActivo(sucursal, puntoventa);
+					this.activeEvent = res.data;
+					if( this.activeEvent )
+					{
+						this.$emit('evento-activo', this.activeEvent);
+					}
 					console.log('mixin', res);
 					this.$root.$processing.hide();
 					return res.data;

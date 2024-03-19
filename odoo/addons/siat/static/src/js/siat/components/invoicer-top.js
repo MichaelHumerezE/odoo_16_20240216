@@ -127,9 +127,9 @@
 					event.evento_id 	= eventoId;
 					event.fecha_inicio 	= new Date();
 					const res = await this.service.crear(event, system);
-					console.log(res);
-					if( res.data )
+					if( res.data ){
 						this.activeEvent = res.data;
+					}
 					this.$root.$processing.hide();
 				}	
 				catch(e)

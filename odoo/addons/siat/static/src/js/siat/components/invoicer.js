@@ -561,6 +561,7 @@
 			'invoice.punto_venta'()
 			{
 				this.checkActiveEvent(this.invoice.codigo_sucursal, this.invoice.punto_venta);
+				this.checkActiveEvent();
 			},
 			'invoice.monto_giftcard'()
 			{
