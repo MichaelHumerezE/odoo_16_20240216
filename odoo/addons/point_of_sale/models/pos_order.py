@@ -71,6 +71,8 @@ class PosOrder(models.Model):
             'payment_status': ui_paymentline.get('payment_status'),
             'ticket': ui_paymentline.get('ticket'),
             'pos_order_id': order.id,
+            'card_number': ui_paymentline['card_number'],
+            'amount_gift_card': ui_paymentline['amount_gift_card'],
         }
 
     # This deals with orders that belong to a closed session. In order
@@ -192,6 +194,8 @@ class PosOrder(models.Model):
                 'payment_date': fields.Datetime.now(),
                 'payment_method_id': cash_payment_method.id,
                 'is_change': True,
+                'card_number': pos_order['card_number'],
+                'gift_card': pos_order['gift_card'],
             }
             order.add_payment(return_payment_vals)
 
@@ -893,6 +897,7 @@ class PosOrder(models.Model):
 
     @api.model
     def create_from_ui(self, orders, draft=False):
+        print(orders)
         """ Create and update Orders from the frontend PoS application.
 
         Create new orders and update orders that are in draft status. If an order already exists with a status
@@ -926,8 +931,10 @@ class PosOrder(models.Model):
 
             try:
                 if existing_draft_order:
+                    print(order, 'order process_order si')
                     order_ids.append(self._process_order(order, draft, existing_draft_order))
                 else:
+                    print(order, 'order process_order no')
                     existing_orders = self.env['pos.order'].search([('pos_reference', '=', order_name)])
                     if all(not self._is_the_same_order(order['data'], existing_order) for existing_order in existing_orders):
                         order_ids.append(self._process_order(order, draft, False))
@@ -985,6 +992,7 @@ class PosOrder(models.Model):
     def add_payment(self, data):
         """Create a new payment for the order"""
         self.ensure_one()
+        print(data, 'DATA')
         self.env['pos.payment'].create(data)
         self.amount_paid = sum(self.payment_ids.mapped('amount'))
 

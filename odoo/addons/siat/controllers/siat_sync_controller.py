@@ -183,7 +183,17 @@ class SiatSyncController(Controller, SiatController):
 		puntoventa = int(params.get('puntoventa', 0))
 		service  = ServiceSiatSync()
 		res = service.sync_metodos_pago(sucursal, puntoventa)
-		
+		listaCodigos = res['RespuestaListaParametricas']['listaCodigos']
+		print(listaCodigos)
+		for item in sorted(listaCodigos, key=lambda x: x["codigoClasificador"]):
+            #MODIFY - Verify Method Payment
+			mp = request.env['pos.payment.method'].search([('code', '=', item['codigoClasificador'])], limit=1)
+			if not mp:
+				request.env['pos.payment.method'].create({
+                    'name': item['descripcion'],
+                    'code': item['codigoClasificador'],
+                })
+            #**************************************************************
 		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})
 		
 	@http.route(['/siat/sync/actividades','/siat/sync/actividades/sucursal/<int:sucursal>/puntoventa/<int:puntoventa>'],type='http', auth='user', methods=['GET'])

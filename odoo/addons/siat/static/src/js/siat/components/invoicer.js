@@ -114,7 +114,7 @@
 								<label>Hora</label>
 								<input type="time" class="form-control" ref="hora" />
 							</div>
-						</div>
+						</div> 
 					</div>
 					<template v-if="scom_detalle">
 						<keep-alive>

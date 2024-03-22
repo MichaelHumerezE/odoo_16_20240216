@@ -27,9 +27,8 @@ class InvoiceHeader(ABC, SiatObject):
 			raise Exception('Datos invalidos [leyenda]')
 		if self.montoTotal <= 0:
 			raise Exception('Datos invalidos, [montoTotal]')
-		if self.descuentoAdicional >= self.montoTotal:
+		if self.descuentoAdicional >= self.montoTotal + self.descuentoAdicional:
 			raise Exception('El descuento no puede ser igual o mayor al total')
-
 
 	def check_amounts(self):
 		pass

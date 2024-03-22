@@ -22,12 +22,15 @@ odoo.define('point_of_sale.PaymentScreen', function (require) {
             useListener('send-payment-reverse', this._sendPaymentReverse);
             useListener('send-force-done', this._sendForceDone);
             useListener('validate-order', () => this.validateOrder(false));
+            useListener('set-input-number-card', this.setInputCardEvents);
             this.payment_methods_from_config = this.env.pos.payment_methods.filter(method => this.env.pos.config.payment_method_ids.includes(method.id));
             NumberBuffer.use(this._getNumberBufferConfig);
             useErrorHandlers();
             this.payment_interface = null;
             this.error = false;
             this.validateOrder = useAsyncLockedMethod(this.validateOrder);
+            this.isCardNumber = false;
+            this.isGiftCard = false;
         }
 
         showMaxValueError() {
@@ -80,20 +83,34 @@ odoo.define('point_of_sale.PaymentScreen', function (require) {
             }
         }
         addNewPaymentLine({ detail: paymentMethod }) {
-            // original function: click_paymentmethods
-            let result = this.currentOrder.add_paymentline(paymentMethod);
-            if (result){
-                NumberBuffer.reset();
-                return true;
-            }
-            else{
+            if(this.currentOrder.get_paymentlines().length < 1){
+                let result = this.currentOrder.add_paymentline(paymentMethod);
+                if(paymentMethod.name.includes('TARJETA')){
+                    this.isCardNumber = true;
+                }
+                if(paymentMethod.name.includes('GIFT')){
+                    this.isGiftCard = true;
+                }
+                if (result){
+                    NumberBuffer.reset();
+                    return true;
+                }
+                else{
+                    this.showPopup('ErrorPopup', {
+                        title: this.env._t('Error'),
+                        body: this.env._t('There is already an electronic payment in progress.'),
+                    });
+                    return false;
+                }
+            }else{
                 this.showPopup('ErrorPopup', {
                     title: this.env._t('Error'),
-                    body: this.env._t('There is already an electronic payment in progress.'),
+                    body: this.env._t('Solo se permite elegir un metodo de pago.'),
                 });
                 return false;
             }
         }
+
         _updateSelectedPaymentline() {
             if (this.paymentLines.every((line) => line.paid)) {
                 this.currentOrder.add_paymentline(this.payment_methods_from_config[0]);
@@ -114,14 +131,13 @@ odoo.define('point_of_sale.PaymentScreen', function (require) {
             }
         }
         toggleIsToInvoice() {
-            console.log('Click Payment Screen', this.currentOrder)
             this.currentOrder.set_to_invoice(!this.currentOrder.is_to_invoice());
             this.render(true);
         }
         openCashbox() {
             this.env.proxy.printer.open_cashbox();
         }
-        async addTip() { 
+        async addTip() {
             // click_tip
             const tip = this.currentOrder.get_tip();
             const change = this.currentOrder.get_change();
@@ -163,6 +179,8 @@ odoo.define('point_of_sale.PaymentScreen', function (require) {
                 NumberBuffer.reset();
                 this.render(true);
             }
+            this.isCardNumber = false;
+            this.isGiftCard = false;
         }
         selectPaymentLine(event) {
             const { cid } = event.detail;
@@ -171,7 +189,104 @@ odoo.define('point_of_sale.PaymentScreen', function (require) {
             NumberBuffer.reset();
             this.render(true);
         }
+        setInputCardEvents() {
+            const inputCard = this.el.querySelector('input[name="card_number"]');
+            if (inputCard) {
+                let timeout = null;
+                inputCard.addEventListener('keydown', function(e) {
+                    if (e.keyCode == 8) // tecla Backspace
+                        return true;
+                    if (this.dataset.realvalue && this.dataset.realvalue.length >= 16 || this.readOnly) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode == 8) // números y tecla Backspace
+                        return true;
+                    e.preventDefault();
+                    return false;
+                });
+    
+                inputCard.addEventListener('keyup', function(e) {
+                    if (typeof this.dataset.realvalue === 'undefined')
+                        this.dataset.realvalue = '';
+
+                    if (e.keyCode == 8 && this.dataset.realvalue) { // tecla Backspace
+                        this.dataset.realvalue = this.dataset.realvalue.substring(0, this.dataset.realvalue.length - 1);
+                        return true;
+                    }
+
+                    if (this.dataset.realvalue && this.dataset.realvalue.length >= 16) {
+                        return false;
+                    }
+
+                    if (!this.value || this.value.length <= 0) {
+                        this.dataset.realvalue = '';
+                        return true;
+                    }
+
+                    this.dataset.realvalue += this.value.substr(-1);
+                    this.value = '';
+
+                    for (let i = 0; i < this.dataset.realvalue.length; i++) {
+                        if (isNaN(parseInt(this.dataset.realvalue[i])))
+                            continue;
+                        if (i > 3 && i < 12)
+                            this.value += '0';
+                        else
+                            this.value += this.dataset.realvalue[i];
+                    }
+                });
+                inputCard.addEventListener('input', function(e) {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                    }
+        
+                    timeout = setTimeout(() => {
+                        if (typeof this.dataset.realvalue === 'undefined') {
+                            this.dataset.realvalue = '';
+                        }
+        
+                        if (this.dataset.realvalue && this.dataset.realvalue.length >= 16) {
+                            return false;
+                        }
+        
+                        if (!this.value || this.value.length <= 0) {
+                            this.dataset.realvalue = '';
+                            return true;
+                        }
+        
+                        this.dataset.realvalue += this.value.substr(-1);
+                        this.value = '';
+        
+                        for (let i = 0; i < this.dataset.realvalue.length; i++) {
+                            if (isNaN(parseInt(this.dataset.realvalue[i]))) {
+                                continue;
+                            }
+                            if (i > 3 && i < 12) {
+                                this.value += '0';
+                            } else {
+                                this.value += this.dataset.realvalue[i];
+                            }
+                        }
+                    }, 300); // Establece un retraso de 300 milisegundos
+                });
+            } else {
+                console.error('No se pudo encontrar el elemento con ID card_number_input');
+            }
+        }
         async validateOrder(isForceValidate) {
+            //MODIFY - Card Number
+            if(this.isCardNumber){
+                const cardNumberInput = this.el.querySelector('input[name="card_number"]');
+                this.paymentLines[0].set_card_number(cardNumberInput.dataset.realvalue);
+            }
+            //********************************
+            //MODIFY - GiftCard
+            if(this.isGiftCard){
+                const amountGiftCardInput = this.el.querySelector('input[name="amount_gift_card"]');
+                this.paymentLines[0].set_amount_gift_card(amountGiftCardInput.value);
+            }
+            //********************************
             if(this.env.pos.config.cash_rounding) {
                 if(!this.env.pos.get_order().check_paymentlines_rounding()) {
                     this.showPopup('ErrorPopup', {
@@ -487,6 +602,7 @@ odoo.define('point_of_sale.PaymentScreen', function (require) {
             line.set_payment_status('done');
         }
     }
+
     PaymentScreen.template = 'PaymentScreen';
 
     Registries.Component.add(PaymentScreen);

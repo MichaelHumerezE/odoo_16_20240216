@@ -2328,6 +2328,8 @@ class Payment extends PosModel {
         this.card_type = '';
         this.cardholder_name = '';
         this.transaction_id = '';
+        this.card_number = '';
+        this.amount_gift_card = 0;
 
         if (options.json) {
             this.init_from_JSON(options.json);
@@ -2350,6 +2352,8 @@ class Payment extends PosModel {
         this.cardholder_name = json.cardholder_name;
         this.transaction_id = json.transaction_id;
         this.is_change = json.is_change;
+        this.card_number = json.card_number;
+        this.amount_gift_card = json.amount_gift_card;
     }
     //sets the amount of money on this payment line
     set_amount(value){
@@ -2368,6 +2372,20 @@ class Payment extends PosModel {
             this.selected = selected;
         }
     }
+    //MODIFY - Get Card Number, Amount Gift Card
+    set_card_number(value){
+        this.card_number = value;
+    }
+    set_gift_card(value){
+        this.amount_gift_card = value;
+    }
+    get_card_number(){
+        return this.card_number;
+    }
+    get_amount_gift_card(){
+        return this.amount_gift_card;
+    }
+    //
     /**
      * returns {string} payment status.
      */
@@ -2425,6 +2443,8 @@ class Payment extends PosModel {
             card_type: this.card_type,
             cardholder_name: this.cardholder_name,
             transaction_id: this.transaction_id,
+            card_number: this.card_number,
+            amount_gift_card: this.amount_gift_card,
         };
     }
     //exports as JSON for receipt printing
@@ -2469,7 +2489,6 @@ class Order extends PosModel {
         this.pos_session_id = this.pos.pos_session.id;
         this.cashier        = this.pos.get_cashier();
         this.finalized      = false; // if true, cannot be modified.
-
         this.partner = null;
 
         this.uiState = {
@@ -2516,6 +2535,7 @@ class Order extends PosModel {
      * @param {object} json JSON representing one PoS order.
      */
     init_from_JSON(json) {
+        console.log(json, 'init_from_json')
         let partner;
         if (json.state && ['done', 'invoiced', 'paid'].includes(json.state)) {
             this.sequence_number = json.sequence_number;

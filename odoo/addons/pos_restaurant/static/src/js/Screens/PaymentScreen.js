@@ -13,6 +13,8 @@ odoo.define('pos_restaurant.PosResPaymentScreen', function (require) {
             }
 
             async _sendPaymentAdjust({ detail: line }) {
+                console.log('click 1 sendPayment')
+                console.log(line, 'line');
                 const previous_amount = line.get_amount();
                 const amount_diff = line.order.get_total_with_tax() - line.order.get_total_paid();
                 line.set_amount(previous_amount + amount_diff);

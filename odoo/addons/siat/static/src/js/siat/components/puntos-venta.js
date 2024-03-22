@@ -42,7 +42,6 @@
 								<label>Sucursal</label>
 								<select class="form-control form-select" required v-model="pv.sucursal_id">
 									<option value="">-- sucursal --</option>
-									<option value="0">Sucursal Principal 0 (por defecto)</option>
 									<option v-bind:value="s.codigo" v-for="(s, si) in sucursales">
 									    {{ s.nombre }}
                                     </option>

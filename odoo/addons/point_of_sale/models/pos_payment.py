@@ -32,6 +32,8 @@ class PosPayment(models.Model):
     ticket = fields.Char('Payment Receipt Info')
     is_change = fields.Boolean(string='Is this payment change?', default=False)
     account_move_id = fields.Many2one('account.move')
+    card_number = fields.Char(default=None)
+    amount_gift_card = fields.Monetary(default=0)
 
     def name_get(self):
         res = []
