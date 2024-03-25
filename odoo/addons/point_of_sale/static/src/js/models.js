@@ -2328,7 +2328,7 @@ class Payment extends PosModel {
         this.card_type = '';
         this.cardholder_name = '';
         this.transaction_id = '';
-        this.card_number = '';
+        this.card_number = null;
         this.amount_gift_card = 0;
 
         if (options.json) {
@@ -2376,7 +2376,7 @@ class Payment extends PosModel {
     set_card_number(value){
         this.card_number = value;
     }
-    set_gift_card(value){
+    set_amount_gift_card(value){
         this.amount_gift_card = value;
     }
     get_card_number(){

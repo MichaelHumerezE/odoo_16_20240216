@@ -108,6 +108,49 @@ odoo.define('point_of_sale.ReceiptScreen', function (require) {
                     currentOrder._printed = true;
                 }
             }
+            async print_invoice() {
+                const order_name = this.currentOrder.name;
+                if (!order_name) {
+                    this.env._t('Orden o pedido no encontrado');
+                    return;
+                }
+                try {
+                    const res = await this.rpc({
+                        model: 'account.move',
+                        method: 'action_get_invoice',
+                        args: [order_name],
+                    });
+                    const invoiceUrl = `${window.location.protocol}//${window.location.host}/report/pdf/siat.siat_invoice_report/${res}`;
+                    window.open(invoiceUrl, '_blank'); // Abre la URL en una nueva pestaña
+                } catch (error) {
+                    this.env._t(error);
+                    console.error('Error fetching invoice:', error);
+                }
+            }
+            async print_roll() {
+                console.log(this.currentOrder.to_invoice);
+                const order_name = this.currentOrder.name;
+                if (!order_name) {
+                    this.env._t('Orden o pedido no encontrado');
+                    return;
+                }
+                try {
+                    const res = await this.rpc({
+                        model: 'account.move',
+                        method: 'action_get_invoice',
+                        args: [order_name],
+                    });
+                    if(res){
+                        const invoiceUrl = `${window.location.protocol}//${window.location.host}/report/pdf/siat.siat_invoice_report_ticket/${res}`;
+                        window.open(invoiceUrl, '_blank'); // Abre la URL en una nueva pestaña
+                    }else{
+                        this.env._t('Orden o pedido sin factura generada (solo recibo).');
+                    }
+                } catch (error) {
+                    this.env._t(error);
+                    console.error('Error fetching invoice:', error);
+                }
+            }
             _shouldAutoPrint() {
                 return this.env.pos.config.iface_print_auto && !this.currentOrder._printed;
             }

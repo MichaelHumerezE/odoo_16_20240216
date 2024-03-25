@@ -57,6 +57,15 @@ class AccountMove(models.Model):
                             'pos_payment_name': pos_payment.payment_method_id.name,
                         })
 
+    @api.model
+    def action_get_invoice(self, order_name):
+        account_move = self.env['pos.order'].search([('pos_reference', '=', order_name)], limit=1)
+        if account_move:
+            return account_move.account_move.siat_invoice_id.id
+        else:
+            return None
+
+
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 

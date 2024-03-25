@@ -15,6 +15,14 @@
                     <div class="actions">
                         <h1>How would you like to receive your receipt<t t-if="currentOrder.is_to_invoice()"> &amp; invoice</t>?</h1>
                         <div class="buttons">
+                        <t t-if="currentOrder.to_invoice">
+                            <div class="button print" t-on-click="print_invoice">
+                                <i class="fa fa-print"></i> Imprimir Factura
+                            </div>
+                            <div class="button print" t-on-click="print_roll">
+                                <i class="fa fa-print"></i> Imprimir Rollo
+                            </div>
+                        </t>
                             <div class="button print" t-on-click="printReceipt">
                                 <i class="fa fa-print"></i> Print Receipt
                             </div>

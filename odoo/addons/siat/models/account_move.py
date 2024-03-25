@@ -23,7 +23,6 @@ class SiatAccountMove(models.Model):
         print('TO POST POST', to_post.read())
 
         id_mp = self.env['pos.payment'].search([('pos_order_id', '=', to_post.pos_order_ids.id)], limit=1)
-        print(id_mp.payment_method_id.code, id_mp.card_number, id_mp.amount_gift_card, '******************************************+')
         
         #MODIFY - Multi Branch and  Multi Point of Sale
         pos = to_post.ref.split('/')
@@ -47,11 +46,11 @@ class SiatAccountMove(models.Model):
             'nit_ruc_nif': to_post.partner_id.vat,
             'complemento': to_post.partner_id.complement,
             'codigo_metodo_pago': id_mp.payment_method_id.code if id_mp.payment_method_id.code != 0 else 1,
-            'numero_tarjeta': id_mp.card_number,
+            'numero_tarjeta': id_mp.card_number if id_mp.card_number else None,
             'total': round(to_post.amount_total,2),
             'codigo_moneda': 1,
             'tipo_cambio': 1,
-            'monto_giftcard': id_mp.amount_gift_card,
+            'monto_giftcard': round(float(id_mp.amount_gift_card), 2),
             'discount': 0,
             'data': {'excepcion': 0},
             'items': []

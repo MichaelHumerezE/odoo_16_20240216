@@ -88,7 +88,7 @@
                         <input class="detail barcode" name="barcode" t-model="changes.barcode" t-on-change="captureChange" />
                     </div>
                     <div class="partner-detail">
-                        <span class="label">Tax ID / CI</span>
+                        <span class="label">CI / NIT</span>
                         <input class="detail vat" name="vat" t-model="changes.vat" t-on-change="captureChange" />
                     </div>
                     <div class="partner-detail">

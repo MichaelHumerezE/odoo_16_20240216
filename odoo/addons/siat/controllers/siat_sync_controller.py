@@ -192,6 +192,11 @@ class SiatSyncController(Controller, SiatController):
 				request.env['pos.payment.method'].create({
                     'name': item['descripcion'],
                     'code': item['codigoClasificador'],
+					'is_cash_count': True,
+					'journal_id': 7,
+					'create_uid': 1,
+					'write_uid': 1,
+					'split_transactions': True
                 })
             #**************************************************************
 		return request.make_json_response({'status': 'ok', 'code': 200, 'data': res})

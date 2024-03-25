@@ -100,7 +100,7 @@
                                         <i class="fa fa-cc-visa" role="img" title="Customer" />
                                         <span>
                                             Tarjeta: 
-                                            <input id="card_number_input" class="input-card" name="card_number" type="text" pattern="[0-9]{16}" maxlength="16" ref="inputcard"/>
+                                            <input id="card_number_input" class="input-card" name="card_number" type="text" pattern="[0-9]{16}" maxlength="19" ref="inputcard"/>
                                         </span>
                                     </div>
                                 </div>

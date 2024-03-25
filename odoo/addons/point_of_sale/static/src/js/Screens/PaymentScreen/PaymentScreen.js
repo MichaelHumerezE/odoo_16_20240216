@@ -192,83 +192,19 @@ odoo.define('point_of_sale.PaymentScreen', function (require) {
         setInputCardEvents() {
             const inputCard = this.el.querySelector('input[name="card_number"]');
             if (inputCard) {
-                let timeout = null;
-                inputCard.addEventListener('keydown', function(e) {
-                    if (e.keyCode == 8) // tecla Backspace
-                        return true;
-                    if (this.dataset.realvalue && this.dataset.realvalue.length >= 16 || this.readOnly) {
-                        e.preventDefault();
-                        return false;
-                    }
-                    if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode == 8) // números y tecla Backspace
-                        return true;
-                    e.preventDefault();
-                    return false;
-                });
-    
-                inputCard.addEventListener('keyup', function(e) {
-                    if (typeof this.dataset.realvalue === 'undefined')
-                        this.dataset.realvalue = '';
-
-                    if (e.keyCode == 8 && this.dataset.realvalue) { // tecla Backspace
-                        this.dataset.realvalue = this.dataset.realvalue.substring(0, this.dataset.realvalue.length - 1);
-                        return true;
-                    }
-
-                    if (this.dataset.realvalue && this.dataset.realvalue.length >= 16) {
-                        return false;
-                    }
-
-                    if (!this.value || this.value.length <= 0) {
-                        this.dataset.realvalue = '';
-                        return true;
-                    }
-
-                    this.dataset.realvalue += this.value.substr(-1);
-                    this.value = '';
-
-                    for (let i = 0; i < this.dataset.realvalue.length; i++) {
-                        if (isNaN(parseInt(this.dataset.realvalue[i])))
-                            continue;
-                        if (i > 3 && i < 12)
-                            this.value += '0';
-                        else
-                            this.value += this.dataset.realvalue[i];
-                    }
-                });
                 inputCard.addEventListener('input', function(e) {
-                    if (timeout) {
-                        clearTimeout(timeout);
-                    }
-        
-                    timeout = setTimeout(() => {
-                        if (typeof this.dataset.realvalue === 'undefined') {
-                            this.dataset.realvalue = '';
-                        }
-        
-                        if (this.dataset.realvalue && this.dataset.realvalue.length >= 16) {
-                            return false;
-                        }
-        
-                        if (!this.value || this.value.length <= 0) {
-                            this.dataset.realvalue = '';
-                            return true;
-                        }
-        
-                        this.dataset.realvalue += this.value.substr(-1);
+                    // Elimina caracteres que no sean dígitos
+                    var soloNumeros = this.value.replace(/\D/g, '');
+
+                    // Divide los números en grupos de 4
+                    var formateado = soloNumeros.match(/.{1,4}/g);
+
+                    // Si hay grupos formateados, los une con "-"
+                    if (formateado) {
+                        this.value = formateado.join('-');
+                    } else {
                         this.value = '';
-        
-                        for (let i = 0; i < this.dataset.realvalue.length; i++) {
-                            if (isNaN(parseInt(this.dataset.realvalue[i]))) {
-                                continue;
-                            }
-                            if (i > 3 && i < 12) {
-                                this.value += '0';
-                            } else {
-                                this.value += this.dataset.realvalue[i];
-                            }
-                        }
-                    }, 300); // Establece un retraso de 300 milisegundos
+                    }
                 });
             } else {
                 console.error('No se pudo encontrar el elemento con ID card_number_input');
@@ -278,7 +214,13 @@ odoo.define('point_of_sale.PaymentScreen', function (require) {
             //MODIFY - Card Number
             if(this.isCardNumber){
                 const cardNumberInput = this.el.querySelector('input[name="card_number"]');
-                this.paymentLines[0].set_card_number(cardNumberInput.dataset.realvalue);
+                // Obtener los primeros 4 dígitos
+                var primerosCuatro = cardNumberInput.value.substring(0, 4);
+                // Obtener los últimos 4 dígitos
+                var ultimosCuatro = cardNumberInput.value.substring(15,19);
+                // Construir el valor formateado con ceros entre los primeros y últimos 4 dígitos
+                var valorFormateado = primerosCuatro + '00000000' + ultimosCuatro;
+                this.paymentLines[0].set_card_number(valorFormateado);
             }
             //********************************
             //MODIFY - GiftCard
